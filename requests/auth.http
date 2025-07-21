@@ -1,0 +1,31 @@
+@api_url=http://localhost:3000
+
+# HELLO
+GET {{api_url}}/auth
+Content-Type: application/json
+
+{}
+
+
+### 
+
+# Login
+POST {{api_url}}/auth/login
+Content-Type: application/json
+
+{
+    "email":"abdelouadoud12@email.com",
+    "password":"Abdelouadoud12&"
+}
+
+### 
+
+# Register
+POST {{api_url}}/auth/register
+Content-Type: application/json
+
+{
+    "name":"Abdelouadoud12"
+    "email":"abdelouadoud12@email.com",
+    "password":"Abdelouadoud12&"
+}
