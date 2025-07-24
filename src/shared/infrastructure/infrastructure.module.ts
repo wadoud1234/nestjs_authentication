@@ -4,11 +4,15 @@ import { SuccessResponseInterceptor } from "../presentation/interceptors/success
 import { APP_INTERCEPTOR } from "@nestjs/core";
 import { AppConfigModule } from "./config/config.module";
 import { DatabaseModule } from "./database/database.module";
+import { RedisModule } from "./redis/redis.module";
+import { ScheduleModule } from "@nestjs/schedule";
 
 @Module({
     imports: [
         CqrsModule.forRoot(),
         AppConfigModule,
+        ScheduleModule.forRoot(),
+        RedisModule,
         DatabaseModule
     ],
     providers: [
@@ -17,6 +21,6 @@ import { DatabaseModule } from "./database/database.module";
             useClass: SuccessResponseInterceptor
         }
     ],
-    exports: [CqrsModule, AppConfigModule, DatabaseModule],
+    exports: [CqrsModule, AppConfigModule, DatabaseModule, RedisModule, ScheduleModule],
 })
 export class InfrastructureModule { }

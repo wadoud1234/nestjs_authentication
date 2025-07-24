@@ -2,7 +2,7 @@ import { UserResponsePayload } from "@/modules/users/presentation/contracts/resp
 import { AuthTokensPayload } from "./auth-tokens.response";
 import { SuccessResponsePayload } from "@/shared/presentation/contracts/responses/success.response";
 
-class AuthResponsePayload {
+export class AuthResponsePayload {
     constructor(
         public readonly user: UserResponsePayload,
         public readonly tokens: AuthTokensPayload

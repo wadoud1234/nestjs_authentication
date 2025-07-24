@@ -15,6 +15,20 @@
       "when": 1753054132813,
       "tag": "0001_dashing_blonde_phantom",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1753192550692,
+      "tag": "0002_lowly_slayback",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1753192689324,
+      "tag": "0003_lean_network",
+      "breakpoints": true
     }
   ]
 }

@@ -1,0 +1,1 @@
+ALTER TABLE "users" RENAME COLUMN "lastConnection" TO "last_connection";

@@ -35,9 +35,11 @@ export class Argon2PasswordHasher implements PasswordHasher {
             return await verify(hashed, rawPassword);
         } catch (error) {
             if (error instanceof Error && error.message.includes('Invalid hash')) {
-                throw new BadRequestException('Invalid hashed password format.');
+                // throw new BadRequestException('Invalid hashed password format.');
+                return false
             }
-            throw new InternalServerErrorException('Failed to verify password due to an internal server error.');
+            return false
+            // throw new InternalServerErrorException('Failed to verify password due to an internal server error.');
 
         }
     }

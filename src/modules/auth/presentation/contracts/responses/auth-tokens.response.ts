@@ -7,4 +7,4 @@ export class AuthTokensPayload {
     ) { }
 }
 
-export class UserResponse extends SuccessResponsePayload<AuthTokensPayload> { }
+export class AuthTokensResponse extends SuccessResponsePayload<AuthTokensPayload> { }

@@ -1,7 +1,8 @@
 import { UserRole } from "@/modules/users/domain/enums/user-role.enum";
-import { InferInsertModel, InferSelectModel } from "drizzle-orm";
+import { InferInsertModel, InferSelectModel, relations } from "drizzle-orm";
 import { pgTable, text, uuid, varchar, timestamp, pgEnum, uniqueIndex } from "drizzle-orm/pg-core";
 import { id, timestamps } from "./_shared";
+import { refreshTokensTable } from "./refresh_tokens.table";
 
 export const userRole = pgEnum("role", ["USER", "ADMIN"]);
 
@@ -12,11 +13,15 @@ export const usersTable = pgTable('users', {
     password: varchar("password", { length: 255 }).notNull(),
     bio: text('bio').notNull().default(""),
     role: userRole().default(UserRole.USER).notNull().$type<UserRole>(),
-    lastConnection: timestamp(),
+    lastConnection: timestamp("last_connection"),
     ...timestamps
 }, (table) => [
     uniqueIndex("email_idx").on(table.email)
 ]);
+
+export const userRelations = relations(usersTable, ({ many }) => ({
+    refreshTokens: many(refreshTokensTable),
+}));
 
 export type UsersTable = InferSelectModel<typeof usersTable>;
 export type CreateUserInput = InferInsertModel<typeof usersTable>

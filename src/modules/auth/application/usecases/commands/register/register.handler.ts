@@ -1,54 +1,71 @@
-import { Command, CommandHandler, ICommandHandler } from "@nestjs/cqrs"
-import { LoginRequestBody } from "src/modules/auth/presentation/contracts/requests/login.request"
-import { InjectPasswordHasher, PasswordHasher } from "../../../services/password-hasher.service";
-import { InjectUsersRepository, UsersRepository } from "@/modules/users/infrastructure/repositories/users.repository";
-import { InvalidCredentialsException } from "@/modules/auth/domain/exceptions/invalid-credentials.exception";
-import { UserResponsePayload } from "@/modules/users/presentation/contracts/responses/user.response";
-import { RegisterRequestBody } from "@/modules/auth/presentation/contracts/requests/register.request";
-import { EmailAlreadyUsed } from "@/modules/auth/domain/exceptions/user-already-exists.exception";
-import { UserDatabaseMapper } from "@/modules/auth/infrastructure/mappers/users.mapper";
-import { RegisterCommand } from "./register.command";
-import { RegisterCommandResult } from "./register.result";
-import { Provider } from "@nestjs/common";
-
-
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import {
+  InjectPasswordHasher,
+  PasswordHasher,
+} from '@/modules/auth/application/services/password-hasher.service';
+import { EmailAlreadyUsed } from '@/modules/auth/domain/exceptions/user-already-exists.exception';
+import { RegisterCommand } from './register.command';
+import { RegisterCommandResult } from './register.result';
+import { Provider } from '@nestjs/common';
+import {
+  DatabaseService,
+  InjectDatabase,
+} from '@/shared/infrastructure/database/database.module';
+import { usersTable } from '@/shared/infrastructure/database/schema/users.table';
+import { eq } from 'drizzle-orm';
 
 @CommandHandler(RegisterCommand)
-export class RegisterCommandHandler implements ICommandHandler<RegisterCommand> {
+export class RegisterCommandHandler
+  implements ICommandHandler<RegisterCommand> {
+  constructor(
+    @InjectPasswordHasher() private readonly passwordHasher: PasswordHasher,
+    @InjectDatabase() private readonly database: DatabaseService,
+  ) { }
 
-    constructor(
-        @InjectPasswordHasher() private readonly passwordHasher: PasswordHasher,
-        @InjectUsersRepository() private readonly usersRepository: UsersRepository
-    ) { }
+  async execute({
+    name,
+    email,
+    password,
+  }: RegisterCommand): Promise<RegisterCommandResult> {
+    await this.verifyUserDoesntExist(email);
 
-    async execute({ name, email, password }: RegisterCommand): Promise<RegisterCommandResult> {
-        await this.verifyUserDoesntExist(email);
+    const hashedPassword = await this.passwordHasher.hash(password);
 
-        const hashedPassword = await this.passwordHasher.hash(password);
+    const [newUser] = await this.database
+      .insert(usersTable)
+      .values({
+        name,
+        email,
+        password: hashedPassword
+      })
+      .returning({
+        id: usersTable.id,
+        email: usersTable.email,
+        name: usersTable.name,
+        role: usersTable.role
+      })
 
-        const [newUser] = await this.usersRepository.insertBuilder
-            .values({
-                name,
-                email,
-                password: hashedPassword
-            })
-            .returning(UserDatabaseMapper.mapDatabaseReturnToUserResponse);
+    return newUser;
+  }
 
-        return newUser;
-    }
+  private async verifyUserDoesntExist(email: string) {
+    const [isUserExist] = await this.database
+      .select({
+        id: usersTable.id,
+        email: usersTable.email
+      })
+      .from(usersTable)
+      .where(eq(usersTable.email, email))
+      .limit(1);
 
-    private async verifyUserDoesntExist(email: string) {
-        const user = await this.usersRepository.findOneByEmail(email, {
-            columns: { id: true }
-        })
-        if (!user) return;
-        throw new EmailAlreadyUsed();
-    }
+    if (!isUserExist || !isUserExist.email || !isUserExist.id) return;
+    throw new EmailAlreadyUsed();
+  }
 }
 
-export const RegisterCommandHandlerToken = Symbol("RegisterCommandHandler")
+export const RegisterCommandHandlerToken = Symbol('RegisterCommandHandler');
 
 export const RegisterCommandHandlerProvider: Provider = {
-    provide: RegisterCommandHandlerToken,
-    useClass: RegisterCommandHandler
-}
+  provide: RegisterCommandHandlerToken,
+  useClass: RegisterCommandHandler,
+};

@@ -1,4 +1,25 @@
-@api_url=http://localhost:3000
+@api_url=http://localhost:3000/api/v1
+
+# User 1
+@user1_name=Abdelouadoud12
+@user1_email=abdelouadoud12@email.com
+@user1_password=Abdelouadoud12&
+
+# User 2
+@user2_name=Ayoub Sofiane 1234
+@user2_email=ayoubsofiane1234@email.com
+@user2_password=Ayoubsofiane1234&
+
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiODE1ODBhYS1jODk1LTQ4ODAtOGE5Yi02YWIyN2RkODZjYWYiLCJlbWFpbCI6ImFiZGVsb3VhZG91ZDEyQGVtYWlsLmNvbSIsIm5hbWUiOiJBYmRlbG91YWRvdWQxMiIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzUzMjc3NTY2LCJleHAiOjE3NTMyOTkxNjYsImF1ZCI6InByb2plY3QgcmV2aWV3ZXJzIiwiaXNzIjoibmVzdGpzX2F1dGhlbnRpY2F0aW9uX3Byb2plY3QifQ.nrNZnQK69x3ydtOT2jffxTUhpsZweYsbFL8-2YXCVkw
+
+# SESSION
+GET {{api_url}}/auth/session
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{}
+
+###
 
 # HELLO
 GET {{api_url}}/auth
@@ -6,6 +27,14 @@ Content-Type: application/json
 
 {}
 
+###
+
+# DELETE ALL USERS
+DELETE {{api_url}}/auth
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiNmMzNjg2NS03MzIxLTQ4MjItYjU1MS1mZmViMTQxMDUzMTkiLCJlbWFpbCI6ImF5b3Vic29maWFuZTEyMzRAZW1haWwuY29tIiwibmFtZSI6IkF5b3ViIFNvZmlhbmUgMTIzNCIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNzUzMjEzNjQ1LCJleHAiOjE3NTMzMDAwNDUsImF1ZCI6InByb2plY3QgcmV2aWV3ZXJzIiwiaXNzIjoibmVzdGpzX2F1dGhlbnRpY2F0aW9uX3Byb2plY3QifQ._MW30CCtSWOqfHCGywujKkUuG3fjztFU7fWB-QtnedA
+
+{}
 
 ### 
 
@@ -14,8 +43,8 @@ POST {{api_url}}/auth/login
 Content-Type: application/json
 
 {
-    "email":"abdelouadoud12@email.com",
-    "password":"Abdelouadoud12&"
+    "email":"{{user1_email}}",
+    "password":"{{user1_password}}"
 }
 
 ### 
@@ -25,7 +54,24 @@ POST {{api_url}}/auth/register
 Content-Type: application/json
 
 {
-    "name":"Abdelouadoud12"
-    "email":"abdelouadoud12@email.com",
-    "password":"Abdelouadoud12&"
+    "name":"{{user2_name}}",
+    "email":"{{user2_email}}",
+    "password":"{{user2_password}}"
 }
+
+###
+
+# GET CURRENT USER ACTIVE SESSIONS 
+GET {{api_url}}/auth/sessions
+Content-Type: application/json
+
+{}
+
+###
+
+# LOGOUT
+
+POST {{api_url}}/auth/logout
+Content-Type: application/json
+
+{}
