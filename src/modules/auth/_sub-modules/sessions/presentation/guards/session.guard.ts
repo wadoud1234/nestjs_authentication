@@ -9,16 +9,13 @@ export class SessionGuard implements CanActivate {
     constructor(private readonly reflector: Reflector) { }
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
-        const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
+        const request = context.switchToHttp().getRequest<AuthenticatedRequest<any>>();
         const session = request.session;
 
         const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
             context.getHandler(),
             context.getClass(),
         ]);
-        if (isPublic) {
-            return true;
-        }
 
         // Attempt to load user from session regardless of 'public' status
         if (session && session.user && session.user.id && session.user.email) {

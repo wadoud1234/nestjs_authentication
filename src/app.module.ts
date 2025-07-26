@@ -6,9 +6,11 @@ import { APP_GUARD } from "@nestjs/core";
 import { SessionGuard } from "./modules/auth/_sub-modules/sessions/presentation/guards/session.guard";
 import { SessionActivityMiddleware } from "./modules/auth/_sub-modules/sessions/presentation/middlewares/session-activity.middleware";
 import { RolesGuard } from "./modules/auth/presentation/guards/roles.guard";
+import { BooksModule } from "./modules/books/infrastructure/books.module";
+import { CategoriesModule } from "./modules/categories/infrastructure/categories.module";
 
 @Module({
-    imports: [InfrastructureModule, AuthModule, UsersModule],
+    imports: [InfrastructureModule, AuthModule, UsersModule, BooksModule, CategoriesModule],
     providers: [
         {
             provide: APP_GUARD,

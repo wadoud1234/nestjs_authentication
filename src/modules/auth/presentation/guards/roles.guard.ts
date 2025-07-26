@@ -21,7 +21,7 @@ export class RolesGuard implements CanActivate {
         }
 
         // Get the user from the request (SessionGuard should have already attached it)
-        const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
+        const request = context.switchToHttp().getRequest<AuthenticatedRequest<any>>();
         const user = request.user; // This comes from SessionGuard
 
         // If there's no user, or the user doesn't have a role, deny access

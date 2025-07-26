@@ -5,7 +5,7 @@ import { LoginCommand } from "./login.command";
 import { LoginCommandResult } from "./login.result";
 import { Provider } from "@nestjs/common";
 import { AuthJwtPayload } from "@/modules/auth/_sub-modules/jwts/domain/types/auth-jwt-payload.types";
-import { DatabaseService, InjectDatabase } from "@/shared/infrastructure/database/database.module";
+import { Database, InjectDatabase } from "@/shared/infrastructure/database/database.module";
 import { usersTable } from "@/shared/infrastructure/database/schema/users.table";
 import { eq } from "drizzle-orm";
 
@@ -14,7 +14,7 @@ export class LoginCommandHandler implements ICommandHandler<LoginCommand> {
 
     constructor(
         @InjectPasswordHasher() private readonly passwordHasher: PasswordHasher,
-        @InjectDatabase() private readonly database: DatabaseService
+        @InjectDatabase() private readonly database: Database
     ) { }
 
     async execute({ email, password }: LoginCommand): Promise<LoginCommandResult> {

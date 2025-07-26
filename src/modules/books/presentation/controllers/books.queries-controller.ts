@@ -1,0 +1,47 @@
+import { Public } from "@/modules/auth/presentation/decorators/is-public.decorator";
+import { SuccessResponsePayload } from "@/shared/presentation/contracts/responses/success.response";
+import { Controller, Get, Param, Query } from "@nestjs/common";
+import { GetBooksResponsePayload } from "../contracts/responses/get-books.response";
+import { GetBookDetailsRequestParamsById, GetBookDetailsRequestParamsBySlug } from "../contracts/requests/get-book-details.request";
+import { GetBookDetailsQuery } from "../../application/usecases/queries/get-book-details/get-book-details.query";
+import { GetBooksQuery } from "../../application/usecases/queries/get-books/get-books.query";
+import { QueryBus } from "@nestjs/cqrs";
+
+@Controller("books")
+export class BooksQueriesController {
+
+    constructor(
+        private readonly queryBus: QueryBus
+    ) { }
+
+    // GET BOOKS BY PAGINATION
+    @Public()
+    @Get()
+    async getPaginatedBooks(
+        @Query("page") page: number = 1,
+        @Query("size") size: number = 10,
+        @Query("search") search: string = ""
+    ): Promise<SuccessResponsePayload<GetBooksResponsePayload>> {
+        return { data: await this.queryBus.execute(new GetBooksQuery(page, size, search)) }
+    }
+
+    // GET BOOK DETAILS BY ITS SLUG
+    @Get("slug/:bookSlug")
+    async getBookDetailsBySlug(
+        @Param() params: GetBookDetailsRequestParamsBySlug
+    ) {
+        return {
+            data: await this.queryBus.execute(new GetBookDetailsQuery().fromParamsBySlug(params))
+        }
+    }
+
+    // GET BOOK DETAILS BY ITS ID
+    @Get(":id")
+    async getBookDetailsById(
+        @Param() params: GetBookDetailsRequestParamsById
+    ) {
+        return {
+            data: await this.queryBus.execute(new GetBookDetailsQuery().fromParamsById(params))
+        }
+    }
+}

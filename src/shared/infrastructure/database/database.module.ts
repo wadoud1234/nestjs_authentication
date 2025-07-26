@@ -7,7 +7,7 @@ import { AppConfigModule } from "../config/config.module";
 
 const DATABASE_SERVICE = Symbol("DATABASE_SERVICE");
 
-export type DatabaseService = NodePgDatabase<typeof schema> & {
+export type Database = NodePgDatabase<typeof schema> & {
     $client: Pool;
 }
 
@@ -20,7 +20,7 @@ export const InjectDatabase = () => Inject(DATABASE_SERVICE);
         {
             provide: DATABASE_SERVICE,
             inject: [AppConfigServiceToken],
-            useFactory: (appConfig: AppConfigService): DatabaseService => {
+            useFactory: (appConfig: AppConfigService): Database => {
                 const databaseUrl = appConfig.DATABASE_URL;
                 const pool = new Pool({
                     connectionString: databaseUrl,
@@ -29,7 +29,7 @@ export const InjectDatabase = () => Inject(DATABASE_SERVICE);
                 return drizzle(pool, {
                     schema,
                     casing: "snake_case"
-                }) as DatabaseService
+                }) as Database
             }
         }
     ],

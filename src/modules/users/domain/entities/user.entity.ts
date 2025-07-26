@@ -1,12 +1,14 @@
 import { UserRole } from "../enums/user-role.enum";
 
 export class UserEntity {
-    constructor(
-        public id: string,
-        public name: string,
-        public email: string,
-        public password: string,
-        public role: UserRole,
-        public bio: string
-    ) { }
+    id: string
+    name: string
+    email: string
+    password: string
+    bio: string
+    role: UserRole
+    lastConnection: Date | null
+    createdAt: Date
+    updatedAt: Date | null
+    deletedAt: Date | null
 }

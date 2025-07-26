@@ -1,10 +1,10 @@
-import { DatabaseService, InjectDatabase } from "../database/database.module";
+import { Database, InjectDatabase } from "../database/database.module";
 import { DatabaseTransaction } from "../database/providers/transaction-manager.provider";
 
 export abstract class BaseRepositoryAbstract<Table> {
     constructor(
         @InjectDatabase()
-        protected readonly db: DatabaseService,
+        protected readonly db: Database,
         protected readonly table: Table,
     ) { }
 

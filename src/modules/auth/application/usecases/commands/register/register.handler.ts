@@ -8,7 +8,7 @@ import { RegisterCommand } from './register.command';
 import { RegisterCommandResult } from './register.result';
 import { Provider } from '@nestjs/common';
 import {
-  DatabaseService,
+  Database,
   InjectDatabase,
 } from '@/shared/infrastructure/database/database.module';
 import { usersTable } from '@/shared/infrastructure/database/schema/users.table';
@@ -19,7 +19,7 @@ export class RegisterCommandHandler
   implements ICommandHandler<RegisterCommand> {
   constructor(
     @InjectPasswordHasher() private readonly passwordHasher: PasswordHasher,
-    @InjectDatabase() private readonly database: DatabaseService,
+    @InjectDatabase() private readonly database: Database,
   ) { }
 
   async execute({

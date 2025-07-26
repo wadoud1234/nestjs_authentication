@@ -59,7 +59,9 @@ async function bootstrap() {
   // await app.use(passport.initialize())
   // await app.use(passport.session())
   await app.register(helmet)
-  await app.register(fastifyCsrf);
+  await app.register(fastifyCsrf, {
+    sessionPlugin: '@fastify/session',
+  });
 
   await app.listen(appConfig.PORT);
 }

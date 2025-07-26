@@ -1,7 +1,7 @@
 import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { GetSessionQuery } from "./get-session.query";
 import { GetSessionResult } from "./get-session.result";
-import { DatabaseService, InjectDatabase } from "@/shared/infrastructure/database/database.module";
+import { Database, InjectDatabase } from "@/shared/infrastructure/database/database.module";
 import { usersTable } from "@/shared/infrastructure/database/schema/users.table";
 import { eq } from "drizzle-orm";
 import { Provider, UnauthorizedException } from "@nestjs/common";
@@ -9,7 +9,7 @@ import { Provider, UnauthorizedException } from "@nestjs/common";
 @QueryHandler(GetSessionQuery)
 export class GetSessionHandler implements IQueryHandler<GetSessionQuery> {
     constructor(
-        @InjectDatabase() private readonly database: DatabaseService
+        @InjectDatabase() private readonly database: Database
     ) { }
 
     async execute({ userId }: GetSessionQuery): Promise<GetSessionResult> {

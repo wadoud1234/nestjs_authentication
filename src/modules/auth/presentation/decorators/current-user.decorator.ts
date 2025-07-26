@@ -4,7 +4,7 @@ import { UserResponsePayload } from "@/modules/users/presentation/contracts/resp
 
 export const CurrentUser = createParamDecorator(
     (data: keyof UserResponsePayload, ctx: ExecutionContext) => {
-        const request = ctx.switchToHttp().getRequest<AuthenticatedRequest>();
+        const request = ctx.switchToHttp().getRequest<AuthenticatedRequest<any>>();
         const user = request.user;
 
         return data ? user?.[data] : user;

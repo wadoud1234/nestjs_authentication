@@ -1,15 +1,15 @@
 import { Injectable } from "@nestjs/common";
-import { DatabaseService, InjectDatabase } from "../database.module";
+import { Database, InjectDatabase } from "../database.module";
 
 export type DatabaseTransaction = Parameters<
-    Parameters<DatabaseService['transaction']>[0]
+    Parameters<Database['transaction']>[0]
 >[0];
 
 @Injectable()
 export class TransactionManager {
     constructor(
         @InjectDatabase()
-        private readonly db: DatabaseService,
+        private readonly db: Database,
     ) { }
 
     async runInTransaction<T>(
@@ -18,7 +18,7 @@ export class TransactionManager {
         return this.db.transaction(callback);
     }
 
-    getDatabase(): DatabaseService {
+    getDatabase(): Database {
         return this.db;
     }
 }

@@ -22,7 +22,8 @@ export const refreshTokenRelations = relations(refreshTokensTable, ({ one }) => 
     user: one(usersTable, {
         fields: [refreshTokensTable.userId],
         references: [usersTable.id],
-    }),
+        relationName: "userRefreshTokens"
+    })
 }));
 
 export type RefreshTokenTable = InferSelectModel<typeof refreshTokensTable>;
