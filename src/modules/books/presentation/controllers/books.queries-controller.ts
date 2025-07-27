@@ -6,6 +6,7 @@ import { GetBookDetailsRequestParamsById, GetBookDetailsRequestParamsBySlug } fr
 import { GetBookDetailsQuery } from "../../application/usecases/queries/get-book-details/get-book-details.query";
 import { GetBooksQuery } from "../../application/usecases/queries/get-books/get-books.query";
 import { QueryBus } from "@nestjs/cqrs";
+import { GetBooksRequestQuery } from "../contracts/requests/get-books.request";
 
 @Controller("books")
 export class BooksQueriesController {
@@ -17,12 +18,10 @@ export class BooksQueriesController {
     // GET BOOKS BY PAGINATION
     @Public()
     @Get()
-    async getPaginatedBooks(
-        @Query("page") page: number = 1,
-        @Query("size") size: number = 10,
-        @Query("search") search: string = ""
-    ): Promise<SuccessResponsePayload<GetBooksResponsePayload>> {
-        return { data: await this.queryBus.execute(new GetBooksQuery(page, size, search)) }
+    async getPaginatedBooks(@Query() query: GetBooksRequestQuery): Promise<SuccessResponsePayload<GetBooksResponsePayload>> {
+        return {
+            data: await this.queryBus.execute(GetBooksQuery.from(query))
+        }
     }
 
     // GET BOOK DETAILS BY ITS SLUG

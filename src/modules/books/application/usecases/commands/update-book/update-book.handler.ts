@@ -7,56 +7,63 @@ import { eq } from "drizzle-orm";
 import { BookNotFoundException } from "@/modules/books/domain/exceptions/book-not-found.exception";
 import { InjectSlugGenerator, SlugGeneratorService } from "../../../services/slug-generator.service";
 import { BooksService, InjectBooksService } from "../../../services/books.service";
+import { Database, InjectDatabase } from "@/shared/infrastructure/database/database.module";
 
 export interface UpdateBookCommandHandler extends ICommandHandler<UpdateBookCommand> { }
 
 @CommandHandler(UpdateBookCommand)
 export class UpdateBookCommandHandlerImpl implements UpdateBookCommandHandler {
     constructor(
+        @InjectDatabase() private readonly database: Database,
         @InjectBooksService() private readonly booksService: BooksService,
         @InjectSlugGenerator() private readonly slugGenerator: SlugGeneratorService
     ) { }
 
-    async execute({ authorId, bookId, categoryIds, description, isPublished, isbn, pages, stock, title }: UpdateBookCommand): Promise<UpdateBookCommandResult> {
-        const oldBook = await this.booksService.findFullBookWithCategoryJoinRelations(bookId)
+    async execute({ authorId, bookId, categoryIds, description, isPublished, isbn, pages, stock, title, price }: UpdateBookCommand): Promise<UpdateBookCommandResult> {
+        await this.database.transaction(async (tx) => {
+            const oldBook = await this.booksService.findFullBookWithCategoryJoinRelations(tx, bookId)
 
-        if (!oldBook) {
-            throw new BookNotFoundException()
-        }
-
-        let generatedSlug: string;
-
-        // if title not changes so no need to update
-        if (oldBook.title === title) {
-            generatedSlug = oldBook.slug
-        }
-        else {
-            generatedSlug = this.slugGenerator.generate(title);
-            const isSlugUsed = await this.booksService.verifySlugUsed(generatedSlug);
-            if (isSlugUsed) {
-                generatedSlug = generatedSlug + new Date().toISOString()
+            if (!oldBook) {
+                throw new BookNotFoundException()
             }
-        }
 
-        const oldCategoryIds = oldBook.categories.map(category => {
-            return category.categoryId
+            let generatedSlug: string;
+            // if title not changes so no need to update
+            if (oldBook.title === title) {
+                generatedSlug = oldBook.slug
+            } else {
+                generatedSlug = this.slugGenerator.generate(title);
+                const isSlugUsed = await this.booksService.verifySlugUsed(generatedSlug);
+                if (isSlugUsed) {
+                    generatedSlug = generatedSlug + new Date().toISOString()
+                }
+            }
+
+            const oldCategoryIds = oldBook.categories.map(category => {
+                return category.categoryId
+            })
+
+            await this.booksService.deleteOldBookCategoryRelations(tx, oldCategoryIds);
+
+            const categories = await this.booksService.getBookCategories(Array.from(categoryIds));;
+
+            await this.booksService.updateFullBook(
+                tx,
+                bookId,
+                {
+                    title,
+                    slug: generatedSlug,
+                    description,
+                    pages,
+                    price,
+                    stock,
+                    isbn,
+                    isPublished,
+                })
+
+            await this.booksService.saveNewBookCategoryRelations(tx, bookId, categories.map(category => category.id));
+
         })
-
-        await this.booksService.deleteOldBookCategoryRelations(oldCategoryIds);
-
-        const categories = await this.booksService.getBookCategories(Array.from(categoryIds));;
-
-        await this.booksService.updateFullBook({
-            title,
-            slug: generatedSlug,
-            description,
-            pages,
-            stock,
-            isbn,
-            isPublished,
-        })
-
-        await this.booksService.saveNewBookCategoryRelations(bookId, categories.map(category => category.id));
 
         const book = await this.booksService.findBookByWhereWithAuthorAndCategories(eq(booksTable.id, bookId))
 

@@ -1,4 +1,4 @@
-import { IsArray, IsInt, IsNotEmpty, IsNotEmptyObject, IsString, } from "class-validator";
+import { IsArray, IsInt, IsNotEmpty, IsNotEmptyObject, IsNumber, IsNumberString, IsString, } from "class-validator";
 
 export class CreateBookRequestBody {
     @IsString()
@@ -9,6 +9,9 @@ export class CreateBookRequestBody {
 
     @IsInt()
     pages: number
+
+    @IsNumberString()
+    price: string
 
     @IsInt()
     stock: number

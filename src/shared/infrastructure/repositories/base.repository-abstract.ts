@@ -3,9 +3,7 @@ import { DatabaseTransaction } from "../database/providers/transaction-manager.p
 
 export abstract class BaseRepositoryAbstract<Table> {
     constructor(
-        @InjectDatabase()
-        protected readonly db: Database,
-        protected readonly table: Table,
+        @InjectDatabase() protected readonly db: Database,
     ) { }
 
     protected getDbContext(tx?: DatabaseTransaction) {

@@ -1,4 +1,4 @@
-import { IsArray, IsBoolean, IsInt, IsNotEmpty, IsString, IsUUID, } from "class-validator";
+import { IsArray, IsBoolean, IsInt, IsNotEmpty, IsNumberString, IsString, IsUUID, } from "class-validator";
 
 export class UpdateBookRequestBody {
     @IsString()
@@ -9,6 +9,9 @@ export class UpdateBookRequestBody {
 
     @IsInt()
     pages: number
+
+    @IsNumberString()
+    price: string
 
     @IsInt()
     stock: number

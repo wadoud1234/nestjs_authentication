@@ -57,6 +57,48 @@
       "when": 1753454786196,
       "tag": "0007_superb_magdalene",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1753539831492,
+      "tag": "0008_marvelous_kingpin",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1753539880280,
+      "tag": "0009_yellow_emma_frost",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1753539918577,
+      "tag": "0010_shallow_maggott",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1753539990130,
+      "tag": "0011_striped_lily_hollister",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1753540278920,
+      "tag": "0012_magical_snowbird",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1753542218066,
+      "tag": "0013_blue_terrax",
+      "breakpoints": true
     }
   ]
 }

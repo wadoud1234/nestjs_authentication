@@ -4,6 +4,7 @@ export class BookEntity {
     slug: string    // auto generated
     description: string
     pages: number
+    price: string
     stock: number
     authorId: string    // auto connect
     rating: number  // default: 0

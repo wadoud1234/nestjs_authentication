@@ -1,7 +1,7 @@
 import { Database, InjectDatabase } from "@/shared/infrastructure/database/database.module";
-import { booksTable, CreateBookTable } from "@/shared/infrastructure/database/schema/books.table";
+import { booksTable } from "@/shared/infrastructure/database/schema/books.table";
 import { ConflictException, Inject, Injectable, Provider } from "@nestjs/common";
-import { and, eq, SQL } from "drizzle-orm";
+import { and, eq, ExtractRelationsFromTableExtraConfigSchema, ExtractTableRelationsFromSchema, SQL } from "drizzle-orm";
 import { BookEntity } from "../../domain/entities/book.entity";
 import { BookCategoryEntity } from "../../domain/entities/book-category.entity";
 import { AuthorResponsePaylod } from "@/modules/users/presentation/contracts/responses/author.response";
@@ -9,17 +9,43 @@ import { CategoryResponsePayload } from "@/modules/categories/presentation/contr
 import { categoriesTable } from "@/shared/infrastructure/database/schema/categories.table";
 import { CategoryNotFoundException } from "@/modules/categories/domain/exceptions/category-not-found.exception";
 import { bookCategoriesTable } from "@/shared/infrastructure/database/schema/books_categories.table";
+import { DatabaseTransaction } from "@/shared/infrastructure/database/providers/transaction-manager.provider";
 
 export interface BooksService {
-    findFullBookWithCategoryJoinRelations(bookId: string): Promise<(BookEntity & { categories: BookCategoryEntity[] }) | null>
+    findFullBookWithCategoryJoinRelations(
+        tx: DatabaseTransaction | Database,
+        bookId: string
+    ): Promise<(BookEntity & { categories: BookCategoryEntity[] }) | null>
+
     verifySlugUsed(slug: string): Promise<boolean>
-    updateFullBook(input: Omit<BookEntity, "id" | "authorId" | "deletedAt" | "createdAt" | "updatedAt" | "rating">): Promise<{ id: string }>
+
+    updateFullBook(
+        tx: DatabaseTransaction,
+        bookId: string,
+        input: Omit<BookEntity, "id" | "authorId" | "deletedAt" | "createdAt" | "updatedAt" | "rating">
+    ): Promise<{ id: string }>
+
     findBookByWhereWithAuthorAndCategories(where: SQL): Promise<(BookEntity & { author: AuthorResponsePaylod, categories: CategoryResponsePayload[] }) | null>
+
     getBookCategories(categoryIds: string[]): Promise<CategoryResponsePayload[]>
-    deleteOldBookCategoryRelations(oldRelationIds: string[]): Promise<void>
-    saveNewBookCategoryRelations(bookId: string, newCategoryIds: string[]): Promise<void>
+
+    deleteOldBookCategoryRelations(
+        db: DatabaseTransaction,
+        oldRelationIds: string[]
+    ): Promise<void>
+
+    saveNewBookCategoryRelations(
+        tx: DatabaseTransaction,
+        bookId: string,
+        newCategoryIds: string[]
+    ): Promise<void>
+
     isBookExistByWhere(where: SQL): Promise<boolean>
-    updateBookIsPublished(bookId: string, isPublished: boolean): Promise<{ isPublished: boolean }>
+
+    updateBookIsPublished(
+        bookId: string,
+        isPublished: boolean
+    ): Promise<{ isPublished: boolean }>
 }
 
 @Injectable()
@@ -48,8 +74,8 @@ export class BooksServiceImpl implements BooksService {
         return true
     }
 
-    async findFullBookWithCategoryJoinRelations(bookId: string) {
-        const book = await this.database.query.booksTable.findFirst({
+    async findFullBookWithCategoryJoinRelations(tx: DatabaseTransaction | Database, bookId: string) {
+        const book = await tx.query.booksTable.findFirst({
             where: eq(booksTable.id, bookId),
             with: {
                 categories: true
@@ -77,19 +103,25 @@ export class BooksServiceImpl implements BooksService {
         return true
     }
 
-    async updateFullBook(input: Omit<BookEntity, "id" | "authorId" | "deletedAt" | "createdAt" | "updatedAt" | "rating">) {
-        const [updatedBook] = await this.database
+    async updateFullBook(
+        tx: DatabaseTransaction,
+        bookId: string,
+        input: Omit<BookEntity, "id" | "authorId" | "deletedAt" | "createdAt" | "updatedAt" | "rating">
+    ) {
+        const [updatedBook] = await tx
             .update(booksTable)
             .set({
                 title: input.title,
                 slug: input.slug,
                 description: input.description,
                 pages: input.pages,
+                price: input.price,
                 stock: input.stock,
                 isbn: input.isbn,
                 isPublished: input.isPublished,
                 updatedAt: new Date(),
             })
+            .where(eq(booksTable.id, bookId))
             .returning({ id: booksTable.id })
         return updatedBook
     }
@@ -146,17 +178,19 @@ export class BooksServiceImpl implements BooksService {
         }))
     }
 
-    async deleteOldBookCategoryRelations(oldRelationIds: string[]) {
-        await Promise.all(oldRelationIds.map(async (relationId) => await this.database
-            .delete(bookCategoriesTable)
+    async deleteOldBookCategoryRelations(
+        tx: DatabaseTransaction,
+        oldRelationIds: string[]
+    ) {
+        await Promise.all(oldRelationIds.map(async (relationId) => await tx.delete(bookCategoriesTable)
             .where(eq(bookCategoriesTable.categoryId, relationId))
             .catch(() => { throw new ConflictException("Exception happen when trying to delete old book categories") })
         ))
     }
 
-    async saveNewBookCategoryRelations(bookId: string, newCategoryIds: string[]) {
+    async saveNewBookCategoryRelations(tx: DatabaseTransaction, bookId: string, newCategoryIds: string[]) {
         await Promise.all(newCategoryIds.map(async categoryId => {
-            await this.database.insert(bookCategoriesTable)
+            await tx.insert(bookCategoriesTable)
                 .values({
                     categoryId,
                     bookId

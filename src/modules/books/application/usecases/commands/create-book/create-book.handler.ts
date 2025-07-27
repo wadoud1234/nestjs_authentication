@@ -19,7 +19,7 @@ export class CreateBookCommandHandlerImpl implements CreateBookCommandHandler {
         @InjectSlugGenerator() private readonly slugGenerator: SlugGeneratorService
     ) { }
 
-    async execute({ title, description, pages, stock, isbn, authorId, categoryIds }: CreateBookCommand): Promise<CreateBookResult> {
+    async execute({ title, description, pages, price, stock, isbn, authorId, categoryIds }: CreateBookCommand): Promise<CreateBookResult> {
         // Verify that book doesnt exist with same title
         const [isBookExist] = await this.database
             .select({ id: booksTable.id, title: booksTable.title })
@@ -73,6 +73,7 @@ export class CreateBookCommandHandlerImpl implements CreateBookCommandHandler {
                 title,
                 description,
                 slug: generatedSlug,
+                price,
                 pages,
                 stock,
                 isbn,
