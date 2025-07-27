@@ -1,4 +1,4 @@
-import { pgTable, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, timestamp, unique } from "drizzle-orm/pg-core";
 import { id } from "./_shared";
 import { usersTable } from "./users.table";
 import { booksTable } from "./books.table";
@@ -13,7 +13,9 @@ export const wishlistItemsTable = pgTable("wishlist_items", {
         .notNull()
         .references(() => booksTable.id, { onDelete: "cascade" }),
     addedAt: timestamp("added_at").defaultNow().notNull(),
-});
+}, (table) => [
+    unique().on(table.userId, table.bookId)
+]);
 
 export const wishlistItemRelations = relations(wishlistItemsTable, ({ one }) => ({
     user: one(usersTable, {

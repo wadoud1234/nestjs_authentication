@@ -1,6 +1,7 @@
 import { IQuery, Query } from "@nestjs/cqrs";
 import { GetBooksQueryResult } from "./get-books.result";
 import { BooksSortBy, BooksSortOrder, GetBooksRequestQuery } from "@/modules/books/presentation/contracts/requests/get-books.request";
+import { UserEntity } from "@/modules/users/domain/entities/user.entity";
 
 export class GetBooksQuery extends Query<GetBooksQueryResult> {
     constructor(
@@ -14,12 +15,16 @@ export class GetBooksQuery extends Query<GetBooksQueryResult> {
         public readonly sortBy: BooksSortBy,
         public readonly sortOrder: BooksSortOrder,
         public readonly excludeBookId: string,
-        public readonly isPublished?: boolean
+        public readonly isPublished?: boolean,
+        public readonly currentUserId?: string
     ) {
         super()
     }
 
-    public static from(request: GetBooksRequestQuery) {
+    public static from(
+        request: GetBooksRequestQuery,
+        currentUser?: UserEntity
+    ) {
         return new GetBooksQuery(
             request.page,
             request.size,
@@ -31,7 +36,8 @@ export class GetBooksQuery extends Query<GetBooksQueryResult> {
             request.sortBy,
             request.sortOrder,
             request.excludeBookId,
-            request.isPublished
+            request.isPublished,
+            currentUser?.id
         )
     }
 

@@ -1,4 +1,4 @@
-import { pgTable, integer, text } from "drizzle-orm/pg-core";
+import { pgTable, integer, text, unique, varchar, numeric } from "drizzle-orm/pg-core";
 import { usersTable } from "./users.table";
 import { booksTable } from "./books.table";
 import { InferInsertModel, InferSelectModel, relations } from "drizzle-orm";
@@ -10,10 +10,13 @@ export const reviewsTable = pgTable("reviews", {
         .references(() => usersTable.id, { onDelete: "cascade" }),
     bookId: id("book_id")
         .references(() => booksTable.id, { onDelete: "cascade" }),
+    title: varchar("title", { length: 200 }).default("").notNull(),
     rating: integer("rating").notNull(), // e.g., 1-5
-    comment: text("comment"),
+    comment: text("comment").notNull().default(""),
     ...timestamps,
-});
+}, (table) => [
+    unique().on(table.userId, table.bookId)
+]);
 
 export const reviewRelations = relations(reviewsTable, ({ one }) => ({
     user: one(usersTable, {

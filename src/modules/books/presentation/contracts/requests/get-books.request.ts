@@ -72,22 +72,17 @@ export class GetBooksRequestQuery {
 
     @IsOptional()
     @Transform(({ value }) => {
-        console.log({ value })
         if (value === undefined || value === null || value === '') {
-            console.log({ undefined: undefined })
             return undefined; // Show all books
         }
 
         const strValue = String(value).toLowerCase();
         if (strValue === 'true') {
-            console.log({ true: true })
             return true; // Only published
         }
         if (strValue === 'false') {
-            console.log({ false: false })
             return false; // Only unpublished
         }
-        console.log({ undefined: undefined })
         return undefined; // Invalid value = show all
     })
     isPublished?: boolean; // undefined means show all

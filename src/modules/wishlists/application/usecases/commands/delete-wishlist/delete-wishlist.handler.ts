@@ -1,0 +1,32 @@
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs"
+import { Provider } from "@nestjs/common";
+import { AuthJwtPayload } from "@/modules/auth/_sub-modules/jwts/domain/types/auth-jwt-payload.types";
+import { Database, InjectDatabase } from "@/shared/infrastructure/database/database.module";
+import { usersTable } from "@/shared/infrastructure/database/schema/users.table";
+import { InjectWishlistsService, WishlistsService } from "../../../services/wishlists.service";
+import { DeleteWishlistCommand } from "./delete-wishlist.command";
+import { DeleteWishlistCommandResult } from "./delete-wishlist.result";
+
+export interface DeleteWishlistCommandHandler extends ICommandHandler<DeleteWishlistCommand> { }
+
+@CommandHandler(DeleteWishlistCommand)
+export class DeleteWishlistCommandHandlerImpl implements DeleteWishlistCommandHandler {
+
+    constructor(
+        @InjectDatabase() private readonly database: Database,
+        @InjectWishlistsService() private readonly wishlistsService: WishlistsService
+    ) { }
+
+    async execute({ id }: DeleteWishlistCommand): Promise<DeleteWishlistCommandResult> {
+        await this.wishlistsService.removeFromWishlist(id)
+        return {}
+    }
+
+}
+
+export const DeleteWishlistCommandHandlerToken = Symbol("DeleteWishlistCommandHandler");
+
+export const DeleteWishlistCommandHandlerProvider: Provider = {
+    provide: DeleteWishlistCommandHandlerToken,
+    useClass: DeleteWishlistCommandHandlerImpl
+} 

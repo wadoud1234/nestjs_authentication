@@ -6,3 +6,8 @@ export class BookWithAuthorAndCategoryResponsePayload extends BookEntity {
     author: AuthorResponsePaylod
     categories: CategoryResponsePayload[]
 }
+
+export class BookWithAuthorAndCategoryAndOptionalWishlistResponsePayload extends BookWithAuthorAndCategoryResponsePayload {
+    wishlisted: boolean
+    wishlistIte?: string
+}

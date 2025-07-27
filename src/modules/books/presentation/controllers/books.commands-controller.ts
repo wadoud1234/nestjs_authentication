@@ -13,6 +13,10 @@ import { UpdateBookIsPublishedRequestBody, UpdateBookIsPublishedRequestParams } 
 import { UpdateBookIsPublishedCommand } from "../../application/usecases/commands/update-book-is-published/update-book-is-published.command";
 import { DeleteBookRequestParams } from "../contracts/requests/delete-book.request";
 import { DeleteBookCommand } from "../../application/usecases/commands/delete-book/delete-book.command";
+import { ToggleWishlistBookCommand } from "@/modules/wishlists/application/usecases/commands/toggle-wishlist/toggle-wishlist.command";
+import { ToggleWishlistBookRequestParams } from "../contracts/requests/toggle-wishlist-book.request";
+import { CreateReviewRequestBody, CreateReviewRequestParams } from "@/modules/reviews/presentation/contracts/requests/create-review.request";
+import { CreateReviewCommand } from "@/modules/reviews/application/usecases/commands/create-review/create-review.command";
 
 @Controller("books")
 export class BooksCommandsController {
@@ -55,6 +59,29 @@ export class BooksCommandsController {
     ) {
         return {
             data: await this.commandBus.execute(UpdateBookIsPublishedCommand.from(body, params))
+        }
+    }
+
+    @Public()
+    @Post(":id/wishlist")
+    async toggleWishlistBook(
+        @Param() params: ToggleWishlistBookRequestParams,
+        @CurrentUser() currentUser: UserEntity
+    ) {
+        return {
+            data: await this.commandBus.execute(ToggleWishlistBookCommand.from(params, currentUser))
+        }
+    }
+
+    @Public()
+    @Post(":id/reviews")
+    async create(
+        @Body() body: CreateReviewRequestBody,
+        @Param() params: CreateReviewRequestParams,
+        @CurrentUser() currentUser: UserEntity
+    ) {
+        return {
+            data: await this.commandBus.execute(CreateReviewCommand.from(body, params, currentUser))
         }
     }
 

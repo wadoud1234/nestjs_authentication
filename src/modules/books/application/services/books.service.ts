@@ -40,12 +40,16 @@ export interface BooksService {
         newCategoryIds: string[]
     ): Promise<void>
 
-    isBookExistByWhere(where: SQL): Promise<boolean>
+    isBookExistByWhere(where: SQL, tx: DatabaseTransaction): Promise<false | { id: string }>
+    isBookExistByWhere(where: SQL, tx: void): Promise<false | { id: string }>
 
     updateBookIsPublished(
         bookId: string,
         isPublished: boolean
     ): Promise<{ isPublished: boolean }>
+
+    updateBookRating(bookId: string, ratingsAvg: string, ratingsCount: number, tx: DatabaseTransaction): Promise<{ rating: string; ratingsCount: number; }>
+    updateBookRating(bookId: string, ratingsAvg: string, ratingsCount: number, tx: void): Promise<{ rating: string; ratingsCount: number; }>
 }
 
 @Injectable()
@@ -63,15 +67,15 @@ export class BooksServiceImpl implements BooksService {
         return result
     }
 
-    async isBookExistByWhere(where: SQL) {
-        const isBookExist = await this.database.query.booksTable.findFirst({
+    async isBookExistByWhere(where: SQL, tx: DatabaseTransaction | void) {
+        const isBookExist = await (tx || this.database).query.booksTable.findFirst({
             where,
             columns: {
                 id: true
             }
         })
         if (!isBookExist) return false
-        return true
+        return { id: isBookExist.id }
     }
 
     async findFullBookWithCategoryJoinRelations(tx: DatabaseTransaction | Database, bookId: string) {
@@ -197,6 +201,23 @@ export class BooksServiceImpl implements BooksService {
                 })
         }))
     }
+
+    async updateBookRating(bookId: string, ratingsAvg: string, ratingsCount: number, tx: DatabaseTransaction | void) {
+        // Update the book with new average and count
+        return await (tx || this.database)
+            .update(booksTable)
+            .set({
+                rating: ratingsAvg,
+                ratingsCount: ratingsCount,
+                updatedAt: new Date()
+            })
+            .where(eq(booksTable.id, bookId))
+            .returning({
+                rating: booksTable.rating,
+                ratingsCount: booksTable.ratingsCount
+            }).then(r => r?.[0])
+    }
+
 }
 
 export const BooksServiceToken = Symbol("BooksService")

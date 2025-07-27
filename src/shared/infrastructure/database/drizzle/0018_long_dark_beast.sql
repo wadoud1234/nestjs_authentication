@@ -1,0 +1,1 @@
+ALTER TABLE "reviews" ADD COLUMN "title" varchar(200) NOT NULL;

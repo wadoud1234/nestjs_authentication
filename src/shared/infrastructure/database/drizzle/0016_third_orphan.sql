@@ -1,0 +1,1 @@
+ALTER TABLE "books" ALTER COLUMN "ratings_count" SET NOT NULL;

@@ -8,9 +8,19 @@ import { SessionActivityMiddleware } from "./modules/auth/_sub-modules/sessions/
 import { RolesGuard } from "./modules/auth/presentation/guards/roles.guard";
 import { BooksModule } from "./modules/books/infrastructure/books.module";
 import { CategoriesModule } from "./modules/categories/infrastructure/categories.module";
+import { WishlistsModule } from "./modules/wishlists/infrastructure/wishlists.module";
+import { ReviewsModule } from "./modules/reviews/infrastructure/reviews.module";
 
 @Module({
-    imports: [InfrastructureModule, AuthModule, UsersModule, BooksModule, CategoriesModule],
+    imports: [
+        InfrastructureModule,
+        AuthModule,
+        UsersModule,
+        BooksModule,
+        CategoriesModule,
+        WishlistsModule,
+        ReviewsModule
+    ],
     providers: [
         {
             provide: APP_GUARD,

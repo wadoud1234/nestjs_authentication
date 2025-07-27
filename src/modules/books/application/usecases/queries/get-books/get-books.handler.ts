@@ -9,6 +9,7 @@ import { Provider } from "@nestjs/common";
 import { usersTable } from "@/shared/infrastructure/database/schema/users.table";
 import { bookCategoriesTable } from "@/shared/infrastructure/database/schema/books_categories.table";
 import { BooksSortOrder } from "@/modules/books/presentation/contracts/requests/get-books.request";
+import { wishlistItemsTable } from "@/shared/infrastructure/database/schema/wishlist-items.table";
 
 export interface GetBooksQueryHandler extends IQueryHandler<GetBooksQuery> {
 
@@ -20,7 +21,7 @@ export class GetBooksQueryHandlerImpl implements GetBooksQueryHandler {
         @InjectDatabase() private readonly database: Database
     ) { }
 
-    async execute({ page, size, offset, search, categoryIds, minPrice, maxPrice, authorName, sortBy, sortOrder, excludeBookId, isPublished }: GetBooksQuery): Promise<GetBooksQueryResult> {
+    async execute({ page, size, offset, search, categoryIds, minPrice, maxPrice, authorName, sortBy, sortOrder, excludeBookId, isPublished, currentUserId }: GetBooksQuery): Promise<GetBooksQueryResult> {
         const whereConditions: (SQL | undefined)[] = []
 
         if (search?.trim().length > 0) {
@@ -81,16 +82,6 @@ export class GetBooksQueryHandlerImpl implements GetBooksQueryHandler {
             }
         }
 
-        const sortColumnMap = {
-            title: booksTable.title,
-            price: booksTable.price,
-            rating: booksTable.rating,
-            createdAt: booksTable.createdAt
-        };
-
-        const sortColumn = sortColumnMap[sortBy] || booksTable.createdAt;
-        const orderFunction = sortOrder === BooksSortOrder.DESC ? desc : asc;
-
         if (excludeBookId.trim().length > 0) {
             whereConditions.push(ne(booksTable.id, excludeBookId))
         }
@@ -101,6 +92,20 @@ export class GetBooksQueryHandlerImpl implements GetBooksQueryHandler {
         else if (isPublished === false) {
             whereConditions.push(eq(booksTable.isPublished, false))
         }
+
+        // SORTING AND ORDERING
+
+        const sortColumnMap = {
+            title: booksTable.title,
+            price: booksTable.price,
+            rating: booksTable.rating,
+            createdAt: booksTable.createdAt
+        };
+
+        const sortColumn = sortColumnMap[sortBy] || booksTable.createdAt;
+        const orderFunction = sortOrder === BooksSortOrder.DESC ? desc : asc;
+
+
 
         const books = await this.database.query.booksTable.findMany({
             limit: size,
@@ -123,16 +128,26 @@ export class GetBooksQueryHandlerImpl implements GetBooksQueryHandler {
                             }
                         }
                     }
-                }
+                },
+                wishlistItems: currentUserId ? {
+                    columns: { id: true },
+                    where: eq(wishlistItemsTable.userId, currentUserId || "")
+                } : undefined
             }
         });
 
         const booksCount = await this.database.$count(booksTable, whereConditions.length > 0 ? and(...whereConditions) : undefined);
 
-        const formattedBooks: BookWithAuthorAndCategoryResponsePayload[] = books.map(book => ({
-            ...book,
-            categories: book.categories.map(c => c.category)
-        }));
+        const formattedBooks: GetBooksQueryResult["values"] = books.map(book => {
+            const isWishlistedByCurrentUser = book.wishlistItems.length > 0
+
+            return ({
+                ...book,
+                categories: book.categories.map(c => c.category),
+                wishlisted: isWishlistedByCurrentUser,
+                wishlistItem: isWishlistedByCurrentUser ? book.wishlistItems.map(w => w.id)[0] : undefined
+            })
+        });
 
         return {
             values: formattedBooks,

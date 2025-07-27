@@ -7,7 +7,7 @@ export class BookEntity {
     price: string
     stock: number
     authorId: string    // auto connect
-    rating: number  // default: 0
+    rating: string  // default: 0
     isbn: string
     isPublished: boolean    // default: false
     createdAt: Date     // default: now
