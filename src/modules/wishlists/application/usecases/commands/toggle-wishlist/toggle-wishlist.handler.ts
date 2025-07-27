@@ -12,7 +12,7 @@ import { booksTable } from "@/shared/infrastructure/database/schema/books.table"
 import { BookNotFoundException } from "@/modules/books/domain/exceptions/book-not-found.exception";
 import { wishlistItemsTable } from "@/shared/infrastructure/database/schema/wishlist-items.table";
 import { DatabaseTransaction } from "@/shared/infrastructure/database/providers/transaction-manager.provider";
-import { InjectWishlistsService, WishlistsService } from "../../../services/wishlists.service";
+import { InjectWishlistsRepository, WishlistsRepository } from "../../../../infrastructure/repositories/wishlists.repository";
 
 export interface ToggleWishlistCommandHandler extends ICommandHandler<ToggleWishlistBookCommand> { }
 
@@ -21,7 +21,7 @@ export class ToggleWishlistBookCommandHandlerImpl implements ToggleWishlistComma
 
     constructor(
         @InjectDatabase() private readonly database: Database,
-        @InjectWishlistsService() private readonly wishlistsService: WishlistsService
+        @InjectWishlistsRepository() private readonly wishlistsService: WishlistsRepository
 
     ) { }
 

@@ -8,7 +8,7 @@ import { usersTable } from "@/shared/infrastructure/database/schema/users.table"
 import { eq } from "drizzle-orm";
 import { UpdateReviewCommand } from "./update-review.command";
 import { UpdateReviewCommandResult } from "./update-review.result";
-import { BooksService, InjectBooksService } from "@/modules/books/application/services/books.service";
+import { BooksRepository, InjectBooksRepository } from "@/modules/books/infrastructure/repositories/books.repository";
 import { InjectReviewsRepository, ReviewsRepository } from "@/modules/reviews/infrastructure/repositories/reviews.repository";
 import { reviewsTable } from "@/shared/infrastructure/database/schema/reviews.table";
 import { ReviewNotFoundException } from "@/modules/reviews/domain/exceptions/review-not-found.exception";
@@ -18,7 +18,7 @@ export class UpdateReviewCommandHandler implements ICommandHandler<UpdateReviewC
 
     constructor(
         @InjectDatabase() private readonly database: Database,
-        @InjectBooksService() private readonly booksService: BooksService,
+        @InjectBooksRepository() private readonly booksRepository: BooksRepository,
         @InjectReviewsRepository() private readonly reviewsRepository: ReviewsRepository
     ) { }
 
@@ -44,7 +44,7 @@ export class UpdateReviewCommandHandler implements ICommandHandler<UpdateReviewC
             const { avg: ratingsAvg, count: ratingsCount } = await this.reviewsRepository.countBookAvgRatingAndRatingsCount(bookId, tx);
 
             // Update the book ratings avg and ratings count
-            await this.booksService.updateBookRating(bookId, ratingsAvg, ratingsCount, tx)
+            await this.booksRepository.updateBookRating(bookId, ratingsAvg, ratingsCount, tx)
 
             // Find the created review
             const review = await this.reviewsRepository.findByWhereWithAuthor(whereCondition, tx);

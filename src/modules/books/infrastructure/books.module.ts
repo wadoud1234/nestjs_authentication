@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { BooksModuleCommandHandlers, BooksModuleGuards, BooksModuleQueryHandlers, BooksModuleServices } from "./books.module-providers";
+import { BooksModuleCommandHandlers, BooksModuleGuards, BooksModuleQueryHandlers, BooksModuleRepositories, BooksModuleServices } from "./books.module-providers";
 import { BooksCommandsController } from "../presentation/controllers/books.commands-controller";
 import { BooksQueriesController } from "../presentation/controllers/books.queries-controller";
 
@@ -9,10 +9,12 @@ import { BooksQueriesController } from "../presentation/controllers/books.querie
         ...BooksModuleCommandHandlers,
         ...BooksModuleQueryHandlers,
         ...BooksModuleServices,
-        ...BooksModuleGuards
+        ...BooksModuleGuards,
+        ...BooksModuleRepositories,
     ],
     exports: [
         ...BooksModuleServices,
+        ...BooksModuleRepositories,
         ...BooksModuleGuards
     ]
 })

@@ -3,7 +3,7 @@ import { Provider } from "@nestjs/common";
 import { AuthJwtPayload } from "@/modules/auth/_sub-modules/jwts/domain/types/auth-jwt-payload.types";
 import { Database, InjectDatabase } from "@/shared/infrastructure/database/database.module";
 import { usersTable } from "@/shared/infrastructure/database/schema/users.table";
-import { InjectWishlistsService, WishlistsService } from "../../../services/wishlists.service";
+import { InjectWishlistsRepository, WishlistsRepository } from "../../../../infrastructure/repositories/wishlists.repository";
 import { DeleteWishlistCommand } from "./delete-wishlist.command";
 import { DeleteWishlistCommandResult } from "./delete-wishlist.result";
 
@@ -14,7 +14,7 @@ export class DeleteWishlistCommandHandlerImpl implements DeleteWishlistCommandHa
 
     constructor(
         @InjectDatabase() private readonly database: Database,
-        @InjectWishlistsService() private readonly wishlistsService: WishlistsService
+        @InjectWishlistsRepository() private readonly wishlistsService: WishlistsRepository
     ) { }
 
     async execute({ id }: DeleteWishlistCommand): Promise<DeleteWishlistCommandResult> {

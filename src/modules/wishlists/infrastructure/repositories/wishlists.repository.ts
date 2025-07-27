@@ -4,7 +4,7 @@ import { wishlistItemsTable } from "@/shared/infrastructure/database/schema/wish
 import { Inject, Injectable, Provider } from "@nestjs/common";
 import { eq, SQL } from "drizzle-orm";
 
-export interface WishlistsService {
+export interface WishlistsRepository {
     getWishlistItemIdByWhere(where: SQL | undefined, tx: DatabaseTransaction): Promise<{ id: string } | null>
     getWishlistItemIdByWhere(where: SQL | undefined, tx: void): Promise<{ id: string } | null>
 
@@ -17,7 +17,7 @@ export interface WishlistsService {
 }
 
 @Injectable()
-export class WishlistsServiceImpl implements WishlistsService {
+export class WishlistsRepositoryImpl implements WishlistsRepository {
 
     constructor(
         @InjectDatabase() private readonly database: Database
@@ -50,11 +50,11 @@ export class WishlistsServiceImpl implements WishlistsService {
     }
 }
 
-export const WishlistsServiceToken = Symbol("WishlistsServiceProvider");
+export const WishlistsRepositoryToken = Symbol("WishlistsRepositoryProvider");
 
-export const InjectWishlistsService = () => Inject(WishlistsServiceToken)
+export const InjectWishlistsRepository = () => Inject(WishlistsRepositoryToken)
 
-export const WishlistsServiceProvider: Provider = {
-    provide: WishlistsServiceToken,
-    useClass: WishlistsServiceImpl
+export const WishlistsRepositoryProvider: Provider = {
+    provide: WishlistsRepositoryToken,
+    useClass: WishlistsRepositoryImpl
 }

@@ -11,7 +11,7 @@ import { CategoryNotFoundException } from "@/modules/categories/domain/exception
 import { bookCategoriesTable } from "@/shared/infrastructure/database/schema/books_categories.table";
 import { DatabaseTransaction } from "@/shared/infrastructure/database/providers/transaction-manager.provider";
 
-export interface BooksService {
+export interface BooksRepository {
     findFullBookWithCategoryJoinRelations(
         tx: DatabaseTransaction | Database,
         bookId: string
@@ -53,7 +53,7 @@ export interface BooksService {
 }
 
 @Injectable()
-export class BooksServiceImpl implements BooksService {
+export class BooksRepositoryImpl implements BooksRepository {
     constructor(
         @InjectDatabase() private readonly database: Database
     ) { }
@@ -220,11 +220,11 @@ export class BooksServiceImpl implements BooksService {
 
 }
 
-export const BooksServiceToken = Symbol("BooksService")
+export const BooksRepositoryToken = Symbol("BooksRepository")
 
-export const InjectBooksService = () => Inject(BooksServiceToken)
+export const InjectBooksRepository = () => Inject(BooksRepositoryToken)
 
-export const BooksServiceProvider: Provider = {
-    provide: BooksServiceToken,
-    useClass: BooksServiceImpl
+export const BooksRepositoryProvider: Provider = {
+    provide: BooksRepositoryToken,
+    useClass: BooksRepositoryImpl
 }

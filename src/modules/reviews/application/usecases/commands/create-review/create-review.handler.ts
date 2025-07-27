@@ -8,7 +8,7 @@ import { booksTable } from "@/shared/infrastructure/database/schema/books.table"
 import { BookNotFoundException } from "@/modules/books/domain/exceptions/book-not-found.exception";
 import { reviewsTable } from "@/shared/infrastructure/database/schema/reviews.table";
 import { InjectReviewsRepository, ReviewsRepository } from "@/modules/reviews/infrastructure/repositories/reviews.repository";
-import { BooksService, InjectBooksService } from "@/modules/books/application/services/books.service";
+import { BooksRepository, InjectBooksRepository } from "@/modules/books/infrastructure/repositories/books.repository";
 import { ReviewNotFoundException } from "@/modules/reviews/domain/exceptions/review-not-found.exception";
 
 export interface CreateReviewCommandHandler extends ICommandHandler<CreateReviewCommand> { }
@@ -19,7 +19,7 @@ export class CreateReviewCommandHandlerImpl implements CreateReviewCommandHandle
     constructor(
         @InjectDatabase() private readonly database: Database,
         @InjectReviewsRepository() private readonly reviewsRepository: ReviewsRepository,
-        @InjectBooksService() private readonly booksService: BooksService
+        @InjectBooksRepository() private readonly booksRepository: BooksRepository
     ) { }
 
     async execute({ bookId, authorId, comment, rating, title }: CreateReviewCommand): Promise<CreateReviewCommandResult> {
@@ -27,7 +27,7 @@ export class CreateReviewCommandHandlerImpl implements CreateReviewCommandHandle
         const review = await this.database.transaction(async (tx) => {
 
             // Check book exist
-            const isBookExist = await this.booksService.isBookExistByWhere(eq(booksTable.id, bookId), tx)
+            const isBookExist = await this.booksRepository.isBookExistByWhere(eq(booksTable.id, bookId), tx)
 
             if (!isBookExist) {
                 throw new BookNotFoundException()
@@ -48,7 +48,7 @@ export class CreateReviewCommandHandlerImpl implements CreateReviewCommandHandle
             const { avg: ratingsAvg, count: ratingsCount } = await this.reviewsRepository.countBookAvgRatingAndRatingsCount(bookId, tx);
 
             // Update the book ratings avg and ratings count
-            await this.booksService.updateBookRating(bookId, ratingsAvg, ratingsCount, tx)
+            await this.booksRepository.updateBookRating(bookId, ratingsAvg, ratingsCount, tx)
 
             // Find the created review
             const review = await this.reviewsRepository.findByWhereWithAuthor(whereCondition, tx);

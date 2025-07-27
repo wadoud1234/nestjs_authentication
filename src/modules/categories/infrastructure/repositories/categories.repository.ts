@@ -5,7 +5,7 @@ import { CategoryEntity } from "../../domain/entities/category.entity";
 import { DatabaseTransaction } from "@/shared/infrastructure/database/providers/transaction-manager.provider";
 import { categoriesTable } from "@/shared/infrastructure/database/schema/categories.table";
 
-export interface CategoriesService {
+export interface CategoriesRepository {
     findFullCategoryByWhere(where: SQL, tx: DatabaseTransaction): Promise<CategoryEntity | null>
     findFullCategoryByWhere(where: SQL): Promise<CategoryEntity | null>
 
@@ -17,7 +17,7 @@ export interface CategoriesService {
 }
 
 @Injectable()
-export class CategoriesServiceImpl implements CategoriesService {
+export class CategoriesRepositoryImpl implements CategoriesRepository {
 
     constructor(
         @InjectDatabase() private readonly database: Database
@@ -49,11 +49,11 @@ export class CategoriesServiceImpl implements CategoriesService {
     }
 }
 
-export const CategoriesServiceToken = Symbol("CategoriesService");
+export const CategoriesRepositoryToken = Symbol("CategoriesRepository");
 
-export const InjectCategoriesService = () => Inject(CategoriesServiceToken)
+export const InjectCategoriesRepository = () => Inject(CategoriesRepositoryToken)
 
-export const CategoriesServiceProvider: Provider = {
-    provide: CategoriesServiceToken,
-    useClass: CategoriesServiceImpl
+export const CategoriesRepositoryProvider: Provider = {
+    provide: CategoriesRepositoryToken,
+    useClass: CategoriesRepositoryImpl
 }

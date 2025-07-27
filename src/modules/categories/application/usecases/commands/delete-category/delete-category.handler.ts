@@ -3,7 +3,7 @@ import { Provider } from "@nestjs/common";
 import { Database, InjectDatabase } from "@/shared/infrastructure/database/database.module";
 import { categoriesTable } from "@/shared/infrastructure/database/schema/categories.table";
 import { eq } from "drizzle-orm";
-import { CategoriesService, InjectCategoriesService } from "../../../services/categories.service";
+import { CategoriesRepository, InjectCategoriesRepository } from "../../../../infrastructure/repositories/categories.repository";
 import { CategoryNotFoundException } from "@/modules/categories/domain/exceptions/category-not-found.exception";
 import { DeleteCategoryCommand } from "./delete-category.command";
 import { DeleteCategoryCommandResult } from "./delete-category.result";
@@ -14,7 +14,7 @@ export interface DeleteCategoryCommandHandler extends ICommandHandler<DeleteCate
 export class DeleteCategoryCommandHandlerImpl implements DeleteCategoryCommandHandler {
     constructor(
         @InjectDatabase() private readonly database: Database,
-        @InjectCategoriesService() private readonly categoriesService: CategoriesService
+        @InjectCategoriesRepository() private readonly categoriesRepository: CategoriesRepository
     ) { }
 
     async execute({ id }: DeleteCategoryCommand): Promise<DeleteCategoryCommandResult> {
@@ -23,13 +23,13 @@ export class DeleteCategoryCommandHandlerImpl implements DeleteCategoryCommandHa
         await this.database.transaction(async (tx) => {
             const findBookWhereCondition = eq(categoriesTable.id, id);
 
-            const category = await this.categoriesService.findFullCategoryByWhere(findBookWhereCondition, tx);
+            const category = await this.categoriesRepository.findFullCategoryByWhere(findBookWhereCondition, tx);
 
             if (!category) {
                 throw new CategoryNotFoundException();
             }
 
-            await this.categoriesService.deleteCategory(id, tx);
+            await this.categoriesRepository.deleteCategory(id, tx);
         })
 
         return {};

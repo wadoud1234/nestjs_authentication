@@ -6,7 +6,7 @@ import { booksTable } from "@/shared/infrastructure/database/schema/books.table"
 import { eq } from "drizzle-orm";
 import { BookNotFoundException } from "@/modules/books/domain/exceptions/book-not-found.exception";
 import { InjectSlugGenerator, SlugGeneratorService } from "../../../services/slug-generator.service";
-import { BooksService, InjectBooksService } from "../../../services/books.service";
+import { BooksRepository, InjectBooksRepository } from "../../../../infrastructure/repositories/books.repository";
 import { Database, InjectDatabase } from "@/shared/infrastructure/database/database.module";
 
 export interface UpdateBookCommandHandler extends ICommandHandler<UpdateBookCommand> { }
@@ -15,13 +15,13 @@ export interface UpdateBookCommandHandler extends ICommandHandler<UpdateBookComm
 export class UpdateBookCommandHandlerImpl implements UpdateBookCommandHandler {
     constructor(
         @InjectDatabase() private readonly database: Database,
-        @InjectBooksService() private readonly booksService: BooksService,
+        @InjectBooksRepository() private readonly booksRepository: BooksRepository,
         @InjectSlugGenerator() private readonly slugGenerator: SlugGeneratorService
     ) { }
 
     async execute({ authorId, bookId, categoryIds, description, isPublished, isbn, pages, stock, title, price }: UpdateBookCommand): Promise<UpdateBookCommandResult> {
         await this.database.transaction(async (tx) => {
-            const oldBook = await this.booksService.findFullBookWithCategoryJoinRelations(tx, bookId)
+            const oldBook = await this.booksRepository.findFullBookWithCategoryJoinRelations(tx, bookId)
 
             if (!oldBook) {
                 throw new BookNotFoundException()
@@ -33,7 +33,7 @@ export class UpdateBookCommandHandlerImpl implements UpdateBookCommandHandler {
                 generatedSlug = oldBook.slug
             } else {
                 generatedSlug = this.slugGenerator.generate(title);
-                const isSlugUsed = await this.booksService.verifySlugUsed(generatedSlug);
+                const isSlugUsed = await this.booksRepository.verifySlugUsed(generatedSlug);
                 if (isSlugUsed) {
                     generatedSlug = generatedSlug + new Date().toISOString()
                 }
@@ -43,11 +43,11 @@ export class UpdateBookCommandHandlerImpl implements UpdateBookCommandHandler {
                 return category.categoryId
             })
 
-            await this.booksService.deleteOldBookCategoryRelations(tx, oldCategoryIds);
+            await this.booksRepository.deleteOldBookCategoryRelations(tx, oldCategoryIds);
 
-            const categories = await this.booksService.getBookCategories(Array.from(categoryIds));;
+            const categories = await this.booksRepository.getBookCategories(Array.from(categoryIds));;
 
-            await this.booksService.updateFullBook(
+            await this.booksRepository.updateFullBook(
                 tx,
                 bookId,
                 {
@@ -61,11 +61,11 @@ export class UpdateBookCommandHandlerImpl implements UpdateBookCommandHandler {
                     isPublished,
                 })
 
-            await this.booksService.saveNewBookCategoryRelations(tx, bookId, categories.map(category => category.id));
+            await this.booksRepository.saveNewBookCategoryRelations(tx, bookId, categories.map(category => category.id));
 
         })
 
-        const book = await this.booksService.findBookByWhereWithAuthorAndCategories(eq(booksTable.id, bookId))
+        const book = await this.booksRepository.findBookByWhereWithAuthorAndCategories(eq(booksTable.id, bookId))
 
         if (!book) throw new ConflictException("I am sure there is a problem because generated book not found")
 

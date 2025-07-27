@@ -1,6 +1,6 @@
 import { Database, InjectDatabase } from "@/shared/infrastructure/database/database.module"
 import { reviewsTable } from "@/shared/infrastructure/database/schema/reviews.table"
-import { Inject, Provider } from "@nestjs/common"
+import { Inject, Injectable, Provider } from "@nestjs/common"
 import { avg, count, eq, SQL, SQLWrapper } from "drizzle-orm"
 import { ReviewWithAuthorResponsePayload } from "../../presentation/contracts/responses/review-with-author.response"
 import { DatabaseTransaction } from "@/shared/infrastructure/database/providers/transaction-manager.provider"
@@ -35,6 +35,7 @@ export interface ReviewsRepository {
     deleteByWhere(where: SQL, tx: DatabaseTransaction): Promise<void>
 }
 
+@Injectable()
 export class ReviewsRepositoryImpl implements ReviewsRepository {
 
     constructor(

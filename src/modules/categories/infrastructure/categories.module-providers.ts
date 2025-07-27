@@ -3,7 +3,7 @@ import { CreateCategoryCommandHandlerProvider } from "../application/usecases/co
 import { GetCategoriesQueryHandlerProvider } from "../application/usecases/queries/get-categories/get-categories.handler";
 import { UpdateCategoryCommandHandlerProvider } from "../application/usecases/commands/update-category/update-category.handler";
 import { DeleteCategoryCommandHandlerProvider } from "../application/usecases/commands/delete-category/delete-category.handler";
-import { CategoriesServiceProvider } from "../application/services/categories.service";
+import { CategoriesRepositoryProvider } from "./repositories/categories.repository";
 
 export const CategoriesModuleCommandHandlers: Provider[] = [
     CreateCategoryCommandHandlerProvider,
@@ -16,5 +16,8 @@ export const CategoriesModuleQueryHandlers: Provider[] = [
 ]
 
 export const CategoriesModuleServices: Provider[] = [
-    CategoriesServiceProvider
+]
+
+export const CategoriesModuleRepositories: Provider[] = [
+    CategoriesRepositoryProvider
 ]

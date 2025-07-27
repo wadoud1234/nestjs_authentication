@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { CategoriesModuleCommandHandlers, CategoriesModuleQueryHandlers, CategoriesModuleServices } from "./categories.module-providers";
+import { CategoriesModuleCommandHandlers, CategoriesModuleQueryHandlers, CategoriesModuleRepositories, CategoriesModuleServices } from "./categories.module-providers";
 import { CategoriesQueriesController } from "../presentation/controllers/categories.queries-controller";
 import { CategoriesCommandsController } from "../presentation/controllers/categories.commands-controller";
 
@@ -11,10 +11,12 @@ import { CategoriesCommandsController } from "../presentation/controllers/catego
     providers: [
         ...CategoriesModuleCommandHandlers,
         ...CategoriesModuleQueryHandlers,
-        ...CategoriesModuleServices
+        ...CategoriesModuleServices,
+        ...CategoriesModuleRepositories
     ],
     exports: [
-        ...CategoriesModuleServices
+        ...CategoriesModuleServices,
+        ...CategoriesModuleRepositories
     ]
 })
 export class CategoriesModule { }

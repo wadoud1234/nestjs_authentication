@@ -8,13 +8,17 @@ import { AuthJwtPayload } from "@/modules/auth/_sub-modules/jwts/domain/types/au
 import { Database, InjectDatabase } from "@/shared/infrastructure/database/database.module";
 import { usersTable } from "@/shared/infrastructure/database/schema/users.table";
 import { eq } from "drizzle-orm";
+import { InjectUsersRepository, UsersRepository } from "@/modules/users/infrastructure/repositories/users.repository";
+import { UserResponsePayload } from "@/modules/users/presentation/contracts/responses/user.response";
+
+export interface LoginCommandHandler extends ICommandHandler<LoginCommand> { }
 
 @CommandHandler(LoginCommand)
-export class LoginCommandHandler implements ICommandHandler<LoginCommand> {
+export class LoginCommandHandlerImpl implements LoginCommandHandler {
 
     constructor(
         @InjectPasswordHasher() private readonly passwordHasher: PasswordHasher,
-        @InjectDatabase() private readonly database: Database
+        @InjectUsersRepository() private readonly usersRepository: UsersRepository
     ) { }
 
     async execute({ email, password }: LoginCommand): Promise<LoginCommandResult> {
@@ -25,15 +29,6 @@ export class LoginCommandHandler implements ICommandHandler<LoginCommand> {
             throw new InvalidCredentialsException("Wrong Password")
         }
 
-        const jwtPayload: AuthJwtPayload = {
-            sub: user.id,
-            email: user.email,
-            name: user.name,
-            role: user.role
-        }
-
-        // const tokens = await this.generateAuthTokens(jwtPayload);
-
         return {
             id: user.id,
             name: user.name,
@@ -43,38 +38,18 @@ export class LoginCommandHandler implements ICommandHandler<LoginCommand> {
 
     }
 
-    private async verifyUserExist(email: string) {
-        const [user] = await this.database.select({
-            id: usersTable.id,
-            name: usersTable.name,
-            email: usersTable.email,
-            role: usersTable.role,
-            password: usersTable.password
-        })
-            .from(usersTable)
-            .where(eq(usersTable.email, email))
-            .limit(1)
+    private async verifyUserExist(email: string): Promise<UserResponsePayload & { password: string }> {
+        const whereCondition = eq(usersTable.email, email)
+        const user = await this.usersRepository.findUserByWhereAsUserResponseAndPassword(whereCondition)
 
-        if (user && user.id) return user
-        throw new InvalidCredentialsException("User doesnt exist");
+        if (!user) throw new InvalidCredentialsException("User doesnt exist");
+        return user
     }
-
-    // private async generateAuthTokens(payload: AuthJwtPayload): Promise<AuthTokensPayload> {
-    //     const [accessToken, refreshToken] = await Promise.all([
-    //         this.accessTokenService.sign(payload),
-    //         this.refreshTokenService.sign(payload)
-    //     ])
-
-    //     return {
-    //         accessToken,
-    //         refreshToken
-    //     }
-    // }
 }
 
 export const LoginCommandHandlerToken = Symbol("LoginCommandHandler");
 
 export const LoginCommandHandlerProvider: Provider = {
     provide: LoginCommandHandlerToken,
-    useClass: LoginCommandHandler
+    useClass: LoginCommandHandlerImpl
 } 
