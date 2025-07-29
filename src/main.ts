@@ -16,8 +16,6 @@ import fastifyRedis from "@fastify/redis"
 import { RedisSessionStore, RedisSessionStoreToken } from './shared/infrastructure/redis/providers/redis-session.store';
 
 async function bootstrap() {
-  const adapter = new FastifyAdapter()
-
   const app = await NestFactory.create(
     AppModule,
     new FastifyAdapter() as unknown as NestApplicationOptions,
@@ -65,4 +63,8 @@ async function bootstrap() {
 
   await app.listen(appConfig.PORT);
 }
+
 bootstrap();
+
+
+// <>

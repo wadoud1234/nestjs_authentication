@@ -10,6 +10,7 @@ import { BooksModule } from "./modules/books/infrastructure/books.module";
 import { CategoriesModule } from "./modules/categories/infrastructure/categories.module";
 import { WishlistsModule } from "./modules/wishlists/infrastructure/wishlists.module";
 import { ReviewsModule } from "./modules/reviews/infrastructure/reviews.module";
+import { CartsModule } from "./modules/carts/infrastructure/carts.module";
 
 @Module({
     imports: [
@@ -19,7 +20,8 @@ import { ReviewsModule } from "./modules/reviews/infrastructure/reviews.module";
         BooksModule,
         CategoriesModule,
         WishlistsModule,
-        ReviewsModule
+        ReviewsModule,
+        CartsModule
     ],
     providers: [
         {

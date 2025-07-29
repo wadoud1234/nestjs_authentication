@@ -1,15 +1,17 @@
 import { Database, InjectDatabase } from "@/shared/infrastructure/database/database.module";
-import { booksTable } from "@/shared/infrastructure/database/schema/books.table";
+import { BooksTable, booksTable } from "@/shared/infrastructure/database/schema/books.table";
 import { ConflictException, Inject, Injectable, Provider } from "@nestjs/common";
 import { and, eq, ExtractRelationsFromTableExtraConfigSchema, ExtractTableRelationsFromSchema, SQL } from "drizzle-orm";
 import { BookEntity } from "../../domain/entities/book.entity";
 import { BookCategoryEntity } from "../../domain/entities/book-category.entity";
-import { AuthorResponsePaylod } from "@/modules/users/presentation/contracts/responses/author.response";
+import { AuthorDetails } from "@/modules/users/presentation/contracts/responses/author.response";
 import { CategoryResponsePayload } from "@/modules/categories/presentation/contracts/responses/category.response";
 import { categoriesTable } from "@/shared/infrastructure/database/schema/categories.table";
 import { CategoryNotFoundException } from "@/modules/categories/domain/exceptions/category-not-found.exception";
 import { bookCategoriesTable } from "@/shared/infrastructure/database/schema/books_categories.table";
 import { DatabaseTransaction } from "@/shared/infrastructure/database/providers/transaction-manager.provider";
+import { AnyPgColumn, PgColumn, PgTableExtraConfig, PgTableWithColumns } from "drizzle-orm/pg-core";
+import schema from "@/shared/infrastructure/database/schema";
 
 export interface BooksRepository {
     findFullBookWithCategoryJoinRelations(
@@ -25,7 +27,7 @@ export interface BooksRepository {
         input: Omit<BookEntity, "id" | "authorId" | "deletedAt" | "createdAt" | "updatedAt" | "rating">
     ): Promise<{ id: string }>
 
-    findBookByWhereWithAuthorAndCategories(where: SQL): Promise<(BookEntity & { author: AuthorResponsePaylod, categories: CategoryResponsePayload[] }) | null>
+    findBookByWhereWithAuthorAndCategories(where: SQL): Promise<(BookEntity & { author: AuthorDetails, categories: CategoryResponsePayload[] }) | null>
 
     getBookCategories(categoryIds: string[]): Promise<CategoryResponsePayload[]>
 
@@ -68,14 +70,13 @@ export class BooksRepositoryImpl implements BooksRepository {
     }
 
     async isBookExistByWhere(where: SQL, tx: DatabaseTransaction | void) {
-        const isBookExist = await (tx || this.database).query.booksTable.findFirst({
+        const book = (await (tx || this.database).query.booksTable.findFirst({
             where,
-            columns: {
-                id: true
-            }
-        })
-        if (!isBookExist) return false
-        return { id: isBookExist.id }
+            columns: { id: true }
+        }))
+        if (!book) return false
+
+        return book;
     }
 
     async findFullBookWithCategoryJoinRelations(tx: DatabaseTransaction | Database, bookId: string) {

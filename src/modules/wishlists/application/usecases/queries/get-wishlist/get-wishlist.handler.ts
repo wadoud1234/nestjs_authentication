@@ -7,6 +7,8 @@ import { CategoryNotFoundException } from "@/modules/categories/domain/exception
 import { GetWishlistQuery } from "./get-wishlist.query";
 import { GetWishlistQueryResult } from "./get-wishlist.result";
 import { wishlistItemsTable } from "@/shared/infrastructure/database/schema/wishlist-items.table";
+import { bookDetailsWithoutTimestampsColumns } from "@/modules/books/infrastructure/repositories/helpers/columns/book-details-without-timestamps.columns";
+import { authorColumns } from "@/modules/users/infrastructure/repositories/helpers/columns/author.columns";
 
 export interface GetWishlistQueryHandler extends IQueryHandler<GetWishlistQuery> { }
 
@@ -28,24 +30,10 @@ export class GetWishlistQueryHandlerImpl implements GetWishlistQueryHandler {
             },
             with: {
                 book: {
-                    columns: {
-                        id: true,
-                        title: true,
-                        description: true,
-                        price: true,
-                        rating: true,
-                        stock: true,
-                        isbn: true,
-                        slug: true,
-                        isPublished: true,
-                        pages: true,
-                    },
+                    columns: bookDetailsWithoutTimestampsColumns(),
                     with: {
                         author: {
-                            columns: {
-                                id: true,
-                                name: true
-                            }
+                            columns: authorColumns()
                         }
                     }
                 },

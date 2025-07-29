@@ -8,6 +8,8 @@ import { reviewsTable } from "./reviews.table";
 import { cartItemsTable } from "./cart-items.table";
 import { wishlistItemsTable } from "./wishlist-items.table";
 import { ordersTable } from "./orders.table";
+import { addressesTable } from "./addresses.table";
+import { cartsTable } from "./carts.table";
 
 export const userRole = pgEnum("role", ["USER", "ADMIN", "AUTHOR"]);
 
@@ -24,7 +26,7 @@ export const usersTable = pgTable('users', {
     uniqueIndex("email_idx").on(table.email)
 ]);
 
-export const userRelations = relations(usersTable, ({ many }) => ({
+export const userRelations = relations(usersTable, ({ many, one }) => ({
     refreshTokens: many(refreshTokensTable, {
         relationName: "userRefreshTokens"
     }),
@@ -34,15 +36,16 @@ export const userRelations = relations(usersTable, ({ many }) => ({
     reviews: many(reviewsTable, {
         relationName: "userReviews"
     }),
-    cartItems: many(cartItemsTable, {
-        relationName: "userCartItems"
-    }),
+    cart: one(cartsTable),
     wishlistItems: many(wishlistItemsTable, {
         relationName: "userWishlistItems"
     }),
     orders: many(ordersTable, {
         relationName: "userOrders"
-    })
+    }),
+    addresses: many(addressesTable, {
+        relationName: "userAddresses"
+    }),
 }));
 
 export type UsersTable = InferSelectModel<typeof usersTable>;

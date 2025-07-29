@@ -1,18 +1,6 @@
-import { AuthorResponsePaylod } from "@/modules/users/presentation/contracts/responses/author.response"
+import { BookDetails } from "@/modules/books/presentation/contracts/responses/book-details.response"
 
 export class WishlistItemResponse {
     addedAt: Date
-    book: {
-        id: string,
-        title: string,
-        slug: string,
-        description: string,
-        price: string,
-        stock: number,
-        pages: number,
-        rating: string,
-        isbn: string,
-        isPublished: boolean,
-        author: AuthorResponsePaylod
-    }
+    book: BookDetails
 }
