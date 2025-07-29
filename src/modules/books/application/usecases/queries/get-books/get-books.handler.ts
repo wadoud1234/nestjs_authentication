@@ -3,13 +3,12 @@ import { GetBooksQuery } from "./get-books.query";
 import { GetBooksQueryResult } from "./get-books.result";
 import { Database, InjectDatabase } from "@/shared/infrastructure/database/database.module";
 import { asc, ilike, or, SQL, inArray, and, between, gte, desc, ne, eq } from "drizzle-orm";
-import { booksTable } from "@/shared/infrastructure/database/schema/books.table";
-import { BookWithAuthorAndCategoryResponsePayload } from "@/modules/books/presentation/contracts/responses/book-with-author-and-category.response";
+import { booksTable } from "@/shared/infrastructure/database/schema/books/books.table";
 import { Provider } from "@nestjs/common";
-import { usersTable } from "@/shared/infrastructure/database/schema/users.table";
-import { bookCategoriesTable } from "@/shared/infrastructure/database/schema/books_categories.table";
+import { usersTable } from "@/shared/infrastructure/database/schema/identity/users.table";
 import { BooksSortOrder } from "@/modules/books/presentation/contracts/requests/get-books.request";
-import { wishlistItemsTable } from "@/shared/infrastructure/database/schema/wishlist-items.table";
+import { wishlistItemsTable } from "@/shared/infrastructure/database/schema/user-engagement/wishlist-items.table";
+import { bookCategoriesTable } from "@/shared/infrastructure/database/schema/books";
 
 export interface GetBooksQueryHandler extends IQueryHandler<GetBooksQuery> {
 
@@ -34,7 +33,7 @@ export class GetBooksQueryHandlerImpl implements GetBooksQueryHandler {
         }
 
         if (authorName?.trim().length > 0) {
-            const authorsIds = (await this.database.query.usersTable.findMany({
+            const authorsIds = (await this.database.query.booksTable.findMany({
                 where: ilike(usersTable.name, `%${authorName}%`),
                 columns: { id: true }
             })).map(author => author.id);

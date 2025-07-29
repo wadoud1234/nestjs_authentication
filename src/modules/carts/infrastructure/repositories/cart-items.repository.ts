@@ -1,6 +1,6 @@
 import { Database, InjectDatabase } from "@/shared/infrastructure/database/database.module";
 import { DatabaseTransaction } from "@/shared/infrastructure/database/providers/transaction-manager.provider";
-import { cartItemsTable } from "@/shared/infrastructure/database/schema/cart-items.table";
+import { cartItemsTable } from "@/shared/infrastructure/database/schema/commerce/cart-items.table";
 import { Inject, Injectable, Provider } from "@nestjs/common";
 import { eq, SQL } from "drizzle-orm";
 

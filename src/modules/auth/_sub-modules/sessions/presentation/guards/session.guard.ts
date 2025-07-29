@@ -3,13 +3,14 @@ import { Reflector } from "@nestjs/core";
 import { IS_PUBLIC_KEY } from "../../../../presentation/decorators/is-public.decorator";
 import { AuthenticatedRequest } from "../../../../presentation/types/authenticated-request.types";
 import { UserResponsePayload } from "@/modules/users/presentation/contracts/responses/user.response";
+import { UserAuthPayload } from "@/modules/users/presentation/contracts/responses/user-auth.payload";
 
 @Injectable()
 export class SessionGuard implements CanActivate {
     constructor(private readonly reflector: Reflector) { }
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
-        const request = context.switchToHttp().getRequest<AuthenticatedRequest<any>>();
+        const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
         const session = request.session;
 
         const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
@@ -19,7 +20,7 @@ export class SessionGuard implements CanActivate {
 
         // Attempt to load user from session regardless of 'public' status
         if (session && session.user && session.user.id && session.user.email) {
-            request.user = session.user as UserResponsePayload;
+            request.user = session.user
         } else {
             // Explicitly set request.user to null if no valid session/user data
             // Ensure AuthenticatedRequest type allows 'user: UserResponsePayload | null | undefined;'

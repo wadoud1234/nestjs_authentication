@@ -4,7 +4,7 @@ import { DeleteCartItemCommandResult } from "./delete-cart-item.result";
 import { ConflictException, Provider } from "@nestjs/common";
 import { CartItemsRepository, InjectCartItemsRepository } from "@/modules/carts/infrastructure/repositories/cart-items.repository";
 import { eq } from "drizzle-orm";
-import { cartItemsTable } from "@/shared/infrastructure/database/schema/cart-items.table";
+import { cartItemsTable } from "@/shared/infrastructure/database/schema/commerce/cart-items.table";
 
 export interface DeleteCartItemCommandHandler extends ICommandHandler<DeleteCartItemCommand> { }
 

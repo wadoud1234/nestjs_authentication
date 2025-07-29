@@ -20,7 +20,8 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, AccessTokenS
     }
 
     async validate({ sub, name, email, role }: AuthJwtPayload): Promise<UserResponsePayload> {
-        return { id: sub, name, email, role };
+        // TODO
+        return { id: sub, name, email, roles: [role] };
     }
 }
 

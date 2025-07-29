@@ -7,9 +7,11 @@ import { UpdateBookCommandHandlerProvider } from "../application/usecases/comman
 import { GetBookDetailsQueryHandlerProvider } from "../application/usecases/queries/get-book-details/get-book-details.handler";
 import { UpdateBookIsPublishedCommandHandlerProvider } from "../application/usecases/commands/update-book-is-published/update-book-is-published.handler";
 import { DeleteBookCommandHandlerProvider } from "../application/usecases/commands/delete-book/delete-book.handler";
+import { BookPolicyServiceProvider } from "../application/services/books-policy.service";
 
 export const BooksModuleServices: Provider[] = [
     SlugGeneratorServiceProvider,
+    BookPolicyServiceProvider
 ]
 
 export const BooksModuleRepositories: Provider[] = [

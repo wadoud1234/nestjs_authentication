@@ -7,7 +7,8 @@ import { UserRole } from "@/modules/users/domain/enums/user-role.enum";
 interface UserInfo {
     userId: string;
     username: string;
-    role: UserRole;
+    roles: UserRole[];
+    permissions: string[];
     ipAddress?: string;
     userAgent?: string;
 }
@@ -50,7 +51,8 @@ export class SessionManagerServiceImpl implements SessionManagerService {
                 sessionId,
                 userId: userInfo.userId,
                 username: userInfo.username,
-                role: userInfo.role,
+                roles: userInfo.roles,
+                permissions: userInfo.permissions,
                 lastActivity: new Date(),
                 ipAddress: userInfo.ipAddress,
                 userAgent: userInfo.userAgent,

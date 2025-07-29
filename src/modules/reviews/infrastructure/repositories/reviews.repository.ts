@@ -1,5 +1,5 @@
 import { Database, InjectDatabase } from "@/shared/infrastructure/database/database.module"
-import { reviewsTable } from "@/shared/infrastructure/database/schema/reviews.table"
+import { reviewsTable } from "@/shared/infrastructure/database/schema/user-engagement/reviews.table"
 import { Inject, Injectable, Provider } from "@nestjs/common"
 import { avg, count, eq, SQL, SQLWrapper } from "drizzle-orm"
 import { ReviewWithAuthorResponsePayload } from "../../presentation/contracts/responses/review-with-author.response"

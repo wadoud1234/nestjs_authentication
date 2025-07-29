@@ -3,7 +3,7 @@ import { GetCategoriesQuery } from "./get-categories.query";
 import { GetCategoriesQueryResult } from "./get-categories.result";
 import { Provider } from "@nestjs/common";
 import { Database, InjectDatabase } from "@/shared/infrastructure/database/database.module";
-import { categoriesTable } from "@/shared/infrastructure/database/schema/categories.table";
+import { categoriesTable } from "@/shared/infrastructure/database/schema/books/categories.table";
 import { asc } from "drizzle-orm";
 
 export interface GetCategoriesQueryHandler extends IQueryHandler<GetCategoriesQuery> { }

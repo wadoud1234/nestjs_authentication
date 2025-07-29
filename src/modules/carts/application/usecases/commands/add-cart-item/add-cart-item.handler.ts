@@ -7,12 +7,12 @@ import { InjectUsersRepository, UsersRepository } from "@/modules/users/infrastr
 import { CartsRepository, InjectCartsRepository } from "@/modules/carts/infrastructure/repositories/carts.repository";
 import { CartItemsRepository, InjectCartItemsRepository } from "@/modules/carts/infrastructure/repositories/cart-items.repository";
 import { and, eq } from "drizzle-orm";
-import { cartsTable } from "@/shared/infrastructure/database/schema/carts.table";
+import { cartsTable } from "@/shared/infrastructure/database/schema/commerce/carts.table";
 import { BooksRepository, InjectBooksRepository } from "@/modules/books/infrastructure/repositories/books.repository";
-import { booksTable } from "@/shared/infrastructure/database/schema/books.table";
+import { booksTable } from "@/shared/infrastructure/database/schema/books/books.table";
 import { BookNotFoundException } from "@/modules/books/domain/exceptions/book-not-found.exception";
 import { Database, InjectDatabase } from "@/shared/infrastructure/database/database.module";
-import { cartItemsTable } from "@/shared/infrastructure/database/schema/cart-items.table";
+import { cartItemsTable } from "@/shared/infrastructure/database/schema/commerce/cart-items.table";
 import { cartItemsColumns } from "@/modules/carts/infrastructure/repositories/helpers/columns/cart-items.columns";
 import { bookDetailsWithoutTimestampsColumns } from "@/modules/books/infrastructure/repositories/helpers/columns/book-details-without-timestamps.columns";
 import { authorColumns } from "@/modules/users/infrastructure/repositories/helpers/columns/author.columns";

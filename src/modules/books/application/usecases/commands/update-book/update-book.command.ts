@@ -12,9 +12,9 @@ export class UpdateBookCommand extends Command<UpdateBookCommandResult> {
         public readonly price: string,
         public readonly stock: number,
         public readonly isbn: string,
-        public readonly categoryIds: Set<string>,
+        public readonly categoryIds: string[],
         public readonly isPublished: boolean,
-        public readonly authorId: string,
+        public readonly currentUser: UserEntity,
     ) {
         super()
     }
@@ -32,9 +32,9 @@ export class UpdateBookCommand extends Command<UpdateBookCommandResult> {
             body.price,
             body.stock,
             body.isbn,
-            new Set(body.categoryIds),
+            Array.from(new Set(body.categoryIds)),
             body.isPublished,
-            currentUser.id
+            currentUser
         );
     }
 }

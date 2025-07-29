@@ -17,21 +17,22 @@ export class RolesGuard implements CanActivate {
 
         // If no roles are specified, allow access (or disallow, depending on your default policy)
         if (!requiredRoles) {
+            // PUBLIC
             return true; // Or return false if you want routes without @Roles to be inaccessible
         }
 
         // Get the user from the request (SessionGuard should have already attached it)
-        const request = context.switchToHttp().getRequest<AuthenticatedRequest<any>>();
+        const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
         const user = request.user; // This comes from SessionGuard
 
         // If there's no user, or the user doesn't have a role, deny access
-        if (!user || !user.role) {
+        if (!user || !Array.isArray(user.roles) || user.roles.length <= 0) {
             return false;
         }
 
         // Check if the user's role is among the required roles
         // For simple role checks, this is enough.
         // For hierarchical roles (e.g., Admin > User), you'd need more complex logic here.
-        return requiredRoles.includes(user.role);
+        return requiredRoles.some((role) => user.roles.includes(role));
     }
 }

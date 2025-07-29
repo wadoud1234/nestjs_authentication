@@ -1,6 +1,6 @@
 import { Database, InjectDatabase } from "@/shared/infrastructure/database/database.module";
 import { DatabaseTransaction } from "@/shared/infrastructure/database/providers/transaction-manager.provider";
-import { wishlistItemsTable } from "@/shared/infrastructure/database/schema/wishlist-items.table";
+import { wishlistItemsTable } from "@/shared/infrastructure/database/schema/user-engagement/wishlist-items.table";
 import { Inject, Injectable, Provider } from "@nestjs/common";
 import { eq, SQL } from "drizzle-orm";
 

@@ -9,6 +9,8 @@ import { UpdateCartItemQuantityCommand } from "../../application/usecases/comman
 import { DeleteCartItemRequestParams } from "../contracts/requests/delete-cart-item.request";
 import { DeleteCartItemCommand } from "../../application/usecases/commands/delete-cart-item/delete-cart-item.command";
 import { ClearCartCommand } from "../../application/usecases/commands/clear-cart/clear-cart.command";
+import { HasPermission } from "@/modules/auth/_sub-modules/access-control/presentation/decorators/has-permission.decorator";
+import { PermissionsEnum } from "@/shared/infrastructure/database/schema/identity/permissions.table";
 
 @Controller("carts")
 export class CartsCommandsController {
@@ -17,6 +19,7 @@ export class CartsCommandsController {
         private readonly commandsBus: CommandBus
     ) { }
 
+    @HasPermission(PermissionsEnum.CART_ITEM_ADD)
     @HttpCode(HttpStatus.CREATED)
     @Post("items")
     async addItem(
@@ -28,6 +31,7 @@ export class CartsCommandsController {
         }
     }
 
+    @HasPermission(PermissionsEnum.CART_ITEM_UPDATE_QUANTITY)
     @Put("items/:cartItemId")
     async updateCartItemQuantity(
         @Body() body: UpdateCartItemQuantityRequestBody,
@@ -38,6 +42,7 @@ export class CartsCommandsController {
         }
     }
 
+    @HasPermission(PermissionsEnum.CART_ITEM_REMOVE)
     @HttpCode(HttpStatus.NO_CONTENT)
     @Delete("items/:cartItemId")
     async deleteCartItem(
@@ -48,6 +53,7 @@ export class CartsCommandsController {
         }
     }
 
+    @HasPermission(PermissionsEnum.CART_CLEAR_OWN, PermissionsEnum.CART_CLEAR_ANY)
     @HttpCode(HttpStatus.NO_CONTENT)
     @Delete()
     async clearCart(

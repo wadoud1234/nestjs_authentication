@@ -1,0 +1,34 @@
+import { pgTable, timestamp, unique } from "drizzle-orm/pg-core";
+import { id } from "../_shared";
+import { usersTable } from "../identity/users.table";
+import { booksTable } from "../books/books.table";
+import { InferInsertModel, InferSelectModel, relations } from "drizzle-orm";
+
+export const wishlistItemsTable = pgTable("wishlist_items", {
+    id: id("id").primaryKey(),
+    userId: id("user_id")
+        .notNull()
+        .references(() => usersTable.id, { onDelete: "cascade" }),
+    bookId: id("book_id")
+        .notNull()
+        .references(() => booksTable.id, { onDelete: "cascade" }),
+    addedAt: timestamp("added_at").defaultNow().notNull(),
+}, (table) => [
+    unique().on(table.userId, table.bookId)
+]);
+
+export const wishlistItemRelations = relations(wishlistItemsTable, ({ one }) => ({
+    user: one(usersTable, {
+        fields: [wishlistItemsTable.userId],
+        references: [usersTable.id],
+        relationName: "userWishlistItems"
+    }),
+    book: one(booksTable, {
+        fields: [wishlistItemsTable.bookId],
+        references: [booksTable.id],
+        relationName: "bookWishlistItems"
+    })
+}));
+
+export type WishlistItem = InferSelectModel<typeof wishlistItemsTable>;
+export type CreateWishlistItemInput = InferInsertModel<typeof wishlistItemsTable>;

@@ -1,15 +1,15 @@
 import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { Database, InjectDatabase } from "@/shared/infrastructure/database/database.module";
-import { usersTable } from "@/shared/infrastructure/database/schema/users.table";
+import { usersTable } from "@/shared/infrastructure/database/schema/identity/users.table";
 import { eq } from "drizzle-orm";
 import { Provider, UnauthorizedException } from "@nestjs/common";
 import { GetBookReviewsQuery } from "./get-book-reviews.query";
 import { GetBookReviewsQueryResult } from "./get-book-reviews.result";
 import { BooksRepository, InjectBooksRepository } from "@/modules/books/infrastructure/repositories/books.repository";
-import { booksTable } from "@/shared/infrastructure/database/schema/books.table";
+import { booksTable } from "@/shared/infrastructure/database/schema/books/books.table";
 import { BookNotFoundException } from "@/modules/books/domain/exceptions/book-not-found.exception";
 import { InjectReviewsRepository, ReviewsRepository } from "@/modules/reviews/infrastructure/repositories/reviews.repository";
-import { reviewsTable } from "@/shared/infrastructure/database/schema/reviews.table";
+import { reviewsTable } from "@/shared/infrastructure/database/schema/user-engagement/reviews.table";
 
 export interface GetBookReviewsQueryHandler extends IQueryHandler<GetBookReviewsQuery> { }
 

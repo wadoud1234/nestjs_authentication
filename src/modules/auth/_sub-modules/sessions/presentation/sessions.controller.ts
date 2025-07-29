@@ -99,7 +99,8 @@ export class SessionsController {
                     acc[session.userId] = {
                         userId: session.userId,
                         username: session.username,
-                        role: session.role,
+                        roles: session.roles,
+                        permissions: session.permissions,
                         sessionCount: 0,
                         lastActivity: session.lastActivity,
                         firstLogin: session.loginTime,

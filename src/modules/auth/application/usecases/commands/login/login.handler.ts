@@ -6,7 +6,7 @@ import { LoginCommandResult } from "./login.result";
 import { Provider } from "@nestjs/common";
 import { AuthJwtPayload } from "@/modules/auth/_sub-modules/jwts/domain/types/auth-jwt-payload.types";
 import { Database, InjectDatabase } from "@/shared/infrastructure/database/database.module";
-import { usersTable } from "@/shared/infrastructure/database/schema/users.table";
+import { usersTable } from "@/shared/infrastructure/database/schema/identity/users.table";
 import { eq } from "drizzle-orm";
 import { InjectUsersRepository, UsersRepository } from "@/modules/users/infrastructure/repositories/users.repository";
 import { UserResponsePayload } from "@/modules/users/presentation/contracts/responses/user.response";
@@ -33,12 +33,13 @@ export class LoginCommandHandlerImpl implements LoginCommandHandler {
             id: user.id,
             name: user.name,
             email: user.email,
-            role: user.role
+            roles: user.roles,
+            permissions: user.permissions
         }
 
     }
 
-    private async verifyUserExist(email: string): Promise<UserResponsePayload & { password: string }> {
+    private async verifyUserExist(email: string) {
         const whereCondition = eq(usersTable.email, email)
         const user = await this.usersRepository.findUserByWhereAsUserResponseAndPassword(whereCondition)
 

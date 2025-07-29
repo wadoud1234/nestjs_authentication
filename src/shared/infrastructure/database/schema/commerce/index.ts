@@ -1,0 +1,5 @@
+export { addressRelations, addressesTable } from "./addresses.table"
+export { cartItemRelations, cartItemsTable } from "./cart-items.table"
+export { cartRelations, cartsTable } from "./carts.table"
+import { orderItemRelations, orderItemsTable } from "./order-items.table"
+import { orderRelations, ordersTable, orderStatusEnum } from "./orders.table"

@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { DeleteReviewCommand } from "./delete-review.command";
 import { DeleteReviewCommandResult } from "./delete-review.result";
 import { InjectReviewsRepository, ReviewsRepository } from "@/modules/reviews/infrastructure/repositories/reviews.repository";
-import { reviewsTable } from "@/shared/infrastructure/database/schema/reviews.table";
+import { reviewsTable } from "@/shared/infrastructure/database/schema/user-engagement/reviews.table";
 
 @CommandHandler(DeleteReviewCommand)
 export class DeleteReviewCommandHandler implements ICommandHandler<DeleteReviewCommand> {

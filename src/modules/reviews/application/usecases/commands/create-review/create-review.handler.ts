@@ -4,9 +4,9 @@ import { Database, InjectDatabase } from "@/shared/infrastructure/database/datab
 import { CreateReviewCommand } from "./create-review.command";
 import { CreateReviewCommandResult } from "./create-review.result";
 import { eq } from "drizzle-orm";
-import { booksTable } from "@/shared/infrastructure/database/schema/books.table";
+import { booksTable } from "@/shared/infrastructure/database/schema/books/books.table";
 import { BookNotFoundException } from "@/modules/books/domain/exceptions/book-not-found.exception";
-import { reviewsTable } from "@/shared/infrastructure/database/schema/reviews.table";
+import { reviewsTable } from "@/shared/infrastructure/database/schema/user-engagement/reviews.table";
 import { InjectReviewsRepository, ReviewsRepository } from "@/modules/reviews/infrastructure/repositories/reviews.repository";
 import { BooksRepository, InjectBooksRepository } from "@/modules/books/infrastructure/repositories/books.repository";
 import { ReviewNotFoundException } from "@/modules/reviews/domain/exceptions/review-not-found.exception";

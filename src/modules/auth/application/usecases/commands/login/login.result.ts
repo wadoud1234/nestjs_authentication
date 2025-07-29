@@ -1,3 +1,3 @@
-import { UserResponsePayload } from "@/modules/users/presentation/contracts/responses/user.response";
+import { UserAuthPayload } from "@/modules/users/presentation/contracts/responses/user-auth.payload";
 
-export class LoginCommandResult extends UserResponsePayload { }
+export class LoginCommandResult extends UserAuthPayload { }

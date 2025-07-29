@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { Provider } from "@nestjs/common";
-import { booksTable } from "@/shared/infrastructure/database/schema/books.table";
+import { booksTable } from "@/shared/infrastructure/database/schema/books/books.table";
 import { eq } from "drizzle-orm";
 import { BookNotFoundException } from "@/modules/books/domain/exceptions/book-not-found.exception";
 import { BooksRepository, InjectBooksRepository } from "../../../../infrastructure/repositories/books.repository";

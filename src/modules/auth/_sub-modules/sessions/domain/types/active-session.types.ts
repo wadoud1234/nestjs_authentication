@@ -4,7 +4,8 @@ export interface ActiveSession {
     sessionId: string;
     userId: string;
     username: string;
-    role: UserRole;
+    roles: UserRole[];
+    permissions: string[];
     lastActivity: Date;
     ipAddress?: string;
     userAgent?: string;

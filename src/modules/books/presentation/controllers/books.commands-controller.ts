@@ -1,5 +1,4 @@
 import { CurrentUser } from "@/modules/auth/presentation/decorators/current-user.decorator";
-import { Public } from "@/modules/auth/presentation/decorators/is-public.decorator";
 import { SuccessResponsePayload } from "@/shared/presentation/contracts/responses/success.response";
 import { Body, Controller, Delete, HttpCode, HttpStatus, Param, Patch, Post, Put } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
@@ -17,6 +16,9 @@ import { ToggleWishlistBookCommand } from "@/modules/wishlists/application/useca
 import { ToggleWishlistBookRequestParams } from "../contracts/requests/toggle-wishlist-book.request";
 import { CreateReviewRequestBody, CreateReviewRequestParams } from "@/modules/reviews/presentation/contracts/requests/create-review.request";
 import { CreateReviewCommand } from "@/modules/reviews/application/usecases/commands/create-review/create-review.command";
+import { HasPermission } from "@/modules/auth/_sub-modules/access-control/presentation/decorators/has-permission.decorator";
+import { PermissionsEnum } from "@/shared/infrastructure/database/schema/identity/permissions.table";
+import { DeleteWishlistCommand } from "@/modules/wishlists/application/usecases/commands/delete-wishlist/delete-wishlist.command";
 
 @Controller("books")
 export class BooksCommandsController {
@@ -26,7 +28,7 @@ export class BooksCommandsController {
     ) { }
 
     // CREATE NEW BOOK
-    @Public()
+    @HasPermission(PermissionsEnum.BOOK_CREATE)
     @HttpCode(HttpStatus.CREATED)
     @Post()
     async createBook(
@@ -36,9 +38,8 @@ export class BooksCommandsController {
         return { data: await this.commandBus.execute(CreateBookCommand.from(body, currentUser)) }
     }
 
-
     // UPDATE FULL BOOK
-    @Public()
+    @HasPermission(PermissionsEnum.BOOK_EDIT_ANY, PermissionsEnum.BOOK_EDIT_OWN)
     @Put(":id")
     async updateBook(
         @Body() body: UpdateBookRequestBody,
@@ -51,7 +52,7 @@ export class BooksCommandsController {
     }
 
     // PUBLISH BOOK
-    @Public()
+    @HasPermission(PermissionsEnum.BOOK_PUBLISH)
     @Patch(":id/update-publish")
     async updateBookIsPublished(
         @Body() body: UpdateBookIsPublishedRequestBody,
@@ -62,7 +63,7 @@ export class BooksCommandsController {
         }
     }
 
-    @Public()
+    // @HasPermission(PermissionsEnum.WISHLIST_ITEM_CREATE)
     @Post(":id/wishlist")
     async toggleWishlistBook(
         @Param() params: ToggleWishlistBookRequestParams,
@@ -73,7 +74,18 @@ export class BooksCommandsController {
         }
     }
 
-    @Public()
+    // @Delete(":id/wishlist")
+    // async deleteWishlistBook(
+    //     @Param() params: ToggleWishlistBookRequestParams,
+    //     @CurrentUser() currentUser: UserEntity
+    // ) {
+    //     return {
+    //         data: await this.commandBus.execute(DeleteWishlistCommand.from(params))
+    //     }
+    // }
+
+    // CREATE REVIEW
+    @HasPermission(PermissionsEnum.REVIEW_CREATE)
     @Post(":id/reviews")
     async create(
         @Body() body: CreateReviewRequestBody,
@@ -86,13 +98,14 @@ export class BooksCommandsController {
     }
 
     // DELETE BOOK
-    @Public()
+    @HasPermission(PermissionsEnum.BOOK_DELETE_ANY, PermissionsEnum.BOOK_DELETE_OWN)
     @HttpCode(HttpStatus.NO_CONTENT)
-    @Delete(":id")
+    @Delete(":bookId")
     async deleteBook(
         @Param() params: DeleteBookRequestParams,
+        @CurrentUser() currentUser: UserEntity
     ): Promise<SuccessResponsePayload<null>> {
-        await this.commandBus.execute(new DeleteBookCommand(params.id))
+        await this.commandBus.execute(DeleteBookCommand.from(params, currentUser))
         return { data: null }
     }
 }

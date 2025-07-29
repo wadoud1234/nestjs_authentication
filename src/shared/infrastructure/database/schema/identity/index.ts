@@ -1,0 +1,6 @@
+export { permissionsRelations, permissionsTable } from "./permissions.table"
+export { refreshTokenRelations, refreshTokensTable } from "./refresh_tokens.table"
+export { rolePermissionsRelations, rolePermissionsTable } from "./role-permissions.table"
+export { rolesRelations, rolesTable, userRoleNames } from "./roles.table"
+export { userRolesRelations, userRolesTable } from "./user-roles.table"
+export { userRelations, usersTable } from "./users.table"

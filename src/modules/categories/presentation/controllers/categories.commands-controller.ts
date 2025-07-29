@@ -7,6 +7,8 @@ import { UpdateCategoryCommand } from "../../application/usecases/commands/updat
 import { Public } from "@/modules/auth/presentation/decorators/is-public.decorator";
 import { DeleteCategoryRequestParams } from "../contracts/requests/delete-category.request";
 import { DeleteCategoryCommand } from "../../application/usecases/commands/delete-category/delete-category.command";
+import { HasPermission } from "@/modules/auth/_sub-modules/access-control/presentation/decorators/has-permission.decorator";
+import { PermissionsEnum } from "@/shared/infrastructure/database/schema/identity/permissions.table";
 
 @Public()
 @Controller("categories")
@@ -16,6 +18,7 @@ export class CategoriesCommandsController {
         private readonly commandBus: CommandBus
     ) { }
 
+    @HasPermission(PermissionsEnum.CATEGORY_CREATE)
     @HttpCode(HttpStatus.CREATED)
     @Post()
     async create(@Body() body: CreateCategoryRequestBody) {
@@ -24,6 +27,7 @@ export class CategoriesCommandsController {
         }
     }
 
+    @HasPermission(PermissionsEnum.CATEGORY_EDIT)
     @Put(":id")
     async update(
         @Body() body: UpdateCategoryRequestBody,
@@ -34,6 +38,7 @@ export class CategoriesCommandsController {
         }
     }
 
+    @HasPermission(PermissionsEnum.CATEGORY_DELETE)
     @HttpCode(HttpStatus.NO_CONTENT)
     @Delete(":id")
     async delete(

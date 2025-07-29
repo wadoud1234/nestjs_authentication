@@ -30,23 +30,31 @@ export class AuthCommandsController {
         @Ip() ip: string,
         @Req() request: FastifyRequest
     ): Promise<UserResponse> {
-        const data = await this.commandBus.execute(LoginCommand.from(body))
-
+        const user = await this.commandBus.execute(LoginCommand.from(body))
         // Store user in session
-        session.set("user", data);
+        session.set("user", {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            roles: user.roles,
+            permissions: user.permissions
+        });
 
         // Track the active session
         await this.sessionManager.trackActiveSession(session.sessionId, {
-            userId: data.id,
-            username: data.name,
-            role: data.role,
+            userId: user.id,
+            username: user.name,
+            roles: user.roles,
+            permissions: user.permissions,
             ipAddress: ip,
             userAgent: request.headers['user-agent']
         });
 
+        const { permissions, ...properties } = user
+
         return {
             message: "Login Success",
-            data
+            data: properties
         }
     }
 
@@ -65,7 +73,7 @@ export class AuthCommandsController {
 
     // LOGOUT USER AND DELETE HIS SESSION
 
-    @Post("/logout")
+    @Post("logout")
     @HttpCode(HttpStatus.OK)
     async logout(@Session() session: FastifySessionObject): Promise<{ message: string }> {
         // Remove from active sessions tracking

@@ -11,6 +11,7 @@ import { CategoriesModule } from "./modules/categories/infrastructure/categories
 import { WishlistsModule } from "./modules/wishlists/infrastructure/wishlists.module";
 import { ReviewsModule } from "./modules/reviews/infrastructure/reviews.module";
 import { CartsModule } from "./modules/carts/infrastructure/carts.module";
+import { PermissionGuard } from "./modules/auth/_sub-modules/access-control/presentation/guards/permissions.guard";
 
 @Module({
     imports: [
@@ -31,6 +32,10 @@ import { CartsModule } from "./modules/carts/infrastructure/carts.module";
         {
             provide: APP_GUARD,
             useClass: RolesGuard
+        },
+        {
+            provide: APP_GUARD,
+            useClass: PermissionGuard
         }
     ]
 })

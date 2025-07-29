@@ -1,3 +1,4 @@
+import { UserRole } from '@/modules/users/domain/enums/user-role.enum';
 import 'fastify';
 
 interface FastifySession {
@@ -17,7 +18,8 @@ declare module 'fastify' {
             id: string;
             name: string;
             email: string;
-            role: string;
+            roles: UserRole[];
+            permissions: string[];
         };
     }
 }

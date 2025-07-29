@@ -4,6 +4,8 @@ import { UpdateReviewRequestBody, UpdateReviewRequestParams } from "../contracts
 import { UpdateReviewCommand } from "../../application/usecases/commands/update-review/update-review.command";
 import { DeleteReviewRequestParams } from "../contracts/requests/delete-review.request";
 import { DeleteReviewCommand } from "../../application/usecases/commands/delete-review/delete-review.command";
+import { HasPermission } from "@/modules/auth/_sub-modules/access-control/presentation/decorators/has-permission.decorator";
+import { PermissionsEnum } from "@/shared/infrastructure/database/schema/identity/permissions.table";
 
 @Controller("reviews")
 export class ReviewsCommandsController {
@@ -12,6 +14,7 @@ export class ReviewsCommandsController {
         private readonly commandBus: CommandBus
     ) { }
 
+    @HasPermission(PermissionsEnum.REVIEW_UPDATE_ANY, PermissionsEnum.REVIEW_UPDATE_OWN)
     @Put(":reviewId")
     async update(
         @Body() body: UpdateReviewRequestBody,
@@ -22,6 +25,7 @@ export class ReviewsCommandsController {
         }
     }
 
+    @HasPermission(PermissionsEnum.REVIEW_DELETE_ANY, PermissionsEnum.REVIEW_DELETE_OWN)
     @HttpCode(HttpStatus.NO_CONTENT)
     @Delete(":reviewId")
     async delete(

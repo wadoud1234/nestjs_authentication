@@ -6,7 +6,8 @@ export class UserEntity {
     email: string
     password: string
     bio: string
-    role: UserRole
+    roles: UserRole[]
+    permissions: string[]
     lastConnection: Date | null
     createdAt: Date
     updatedAt: Date | null

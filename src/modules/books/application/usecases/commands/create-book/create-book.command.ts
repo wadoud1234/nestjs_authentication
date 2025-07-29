@@ -12,7 +12,7 @@ export class CreateBookCommand extends Command<CreateBookResult> {
         public readonly stock: number,
         public readonly isbn: string,
         public readonly categoryIds: string[],
-        public readonly authorId: string,
+        public readonly currentUser: UserEntity
     ) {
         super()
     }
@@ -26,7 +26,7 @@ export class CreateBookCommand extends Command<CreateBookResult> {
             body.stock,
             body.isbn,
             body.categoryIds,
-            currentUser.id
+            currentUser
         );
     }
 }

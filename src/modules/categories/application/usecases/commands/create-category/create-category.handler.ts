@@ -3,7 +3,7 @@ import { CreateCategoryCommand } from "./create-category.command";
 import { CreateCategoryResult } from "./create-category.result";
 import { Provider } from "@nestjs/common";
 import { Database, InjectDatabase } from "@/shared/infrastructure/database/database.module";
-import { categoriesTable } from "@/shared/infrastructure/database/schema/categories.table";
+import { categoriesTable } from "@/shared/infrastructure/database/schema/books/categories.table";
 import { eq } from "drizzle-orm";
 import { CategoryAlreadyExist } from "@/modules/categories/domain/exceptions/category-already-exist.exception";
 

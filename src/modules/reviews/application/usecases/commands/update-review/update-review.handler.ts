@@ -4,13 +4,13 @@ import { InvalidCredentialsException } from "@/modules/auth/domain/exceptions/in
 import { Provider } from "@nestjs/common";
 import { AuthJwtPayload } from "@/modules/auth/_sub-modules/jwts/domain/types/auth-jwt-payload.types";
 import { Database, InjectDatabase } from "@/shared/infrastructure/database/database.module";
-import { usersTable } from "@/shared/infrastructure/database/schema/users.table";
+import { usersTable } from "@/shared/infrastructure/database/schema/identity/users.table";
 import { eq } from "drizzle-orm";
 import { UpdateReviewCommand } from "./update-review.command";
 import { UpdateReviewCommandResult } from "./update-review.result";
 import { BooksRepository, InjectBooksRepository } from "@/modules/books/infrastructure/repositories/books.repository";
 import { InjectReviewsRepository, ReviewsRepository } from "@/modules/reviews/infrastructure/repositories/reviews.repository";
-import { reviewsTable } from "@/shared/infrastructure/database/schema/reviews.table";
+import { reviewsTable } from "@/shared/infrastructure/database/schema/user-engagement/reviews.table";
 import { ReviewNotFoundException } from "@/modules/reviews/domain/exceptions/review-not-found.exception";
 
 @CommandHandler(UpdateReviewCommand)

@@ -4,6 +4,7 @@ import { RegisterCommandHandlerProvider } from "../application/usecases/commands
 import { PasswordHasherProvider } from "../application/services/password-hasher.service";
 import { GetSessionHandlerProvider } from "../application/usecases/queries/get-session/get-session.handler";
 import { RolesGuard } from "../presentation/guards/roles.guard";
+import { AuthorizationService } from "../application/services/authz.service";
 
 export const AuthGuards = [
     RolesGuard
@@ -22,4 +23,5 @@ export const AuthQueryHandlers: Provider[] = [
 
 export const AuthServices: Provider[] = [
     PasswordHasherProvider,
+    AuthorizationService
 ];

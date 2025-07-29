@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { Provider } from "@nestjs/common";
 import { Database, InjectDatabase } from "@/shared/infrastructure/database/database.module";
-import { categoriesTable } from "@/shared/infrastructure/database/schema/categories.table";
+import { categoriesTable } from "@/shared/infrastructure/database/schema/books/categories.table";
 import { eq } from "drizzle-orm";
 import { CategoriesRepository, InjectCategoriesRepository } from "../../../../infrastructure/repositories/categories.repository";
 import { CategoryNotFoundException } from "@/modules/categories/domain/exceptions/category-not-found.exception";

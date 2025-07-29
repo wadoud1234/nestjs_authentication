@@ -1,1 +1,0 @@
-ALTER TABLE "reviews" ALTER COLUMN "title" SET DEFAULT '';

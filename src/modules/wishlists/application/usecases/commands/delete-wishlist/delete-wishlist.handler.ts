@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from "@nestjs/cqrs"
 import { Provider } from "@nestjs/common";
 import { AuthJwtPayload } from "@/modules/auth/_sub-modules/jwts/domain/types/auth-jwt-payload.types";
 import { Database, InjectDatabase } from "@/shared/infrastructure/database/database.module";
-import { usersTable } from "@/shared/infrastructure/database/schema/users.table";
+import { usersTable } from "@/shared/infrastructure/database/schema/identity/users.table";
 import { InjectWishlistsRepository, WishlistsRepository } from "../../../../infrastructure/repositories/wishlists.repository";
 import { DeleteWishlistCommand } from "./delete-wishlist.command";
 import { DeleteWishlistCommandResult } from "./delete-wishlist.result";

@@ -35,7 +35,8 @@ export class RefreshTokenStrategy extends PassportStrategy(Strategy, RefreshToke
         });
         if (!payload) throw new BadRequestException("Invalid Refresh Token");
 
-        return { id: sub, name, email, role };
+        // TODO
+        return { id: sub, name, email, roles: [role] };
     }
 }
 
